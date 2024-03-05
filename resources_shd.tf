@@ -211,7 +211,7 @@ resource "azurerm_storage_share" "FSShare" {
   enabled_protocol = "SMB"
 
 
-  storage_account_name = azurerm_storage_account.storage[count.index].name
+  storage_account_name = azurerm_storage_account.storage[0].name
   depends_on           = [azurerm_storage_account.storage]
   lifecycle { ignore_changes = [name, quota, enabled_protocol] }
 }
@@ -240,10 +240,10 @@ resource "azurerm_private_dns_zone" "dnszone_st" {
 resource "azurerm_private_dns_a_record" "dnszone_st" {
   count               = var.fslogix == true ? 1 : 0
   name                = "${var.st_name}.file.core.windows.net"
-  zone_name           = azurerm_private_dns_zone.dnszone_st.name[count.index]
+  zone_name           = azurerm_private_dns_zone.dnszone_st[count.index].name
   resource_group_name = var.vnet_rg
   ttl                 = 300
-  records             = [azurerm_private_endpoint.endpoint_st.private_service_connection.0.private_ip_address]
+  records             = [azurerm_private_endpoint[count.index].endpoint_st.private_service_connection.0.private_ip_address]
   tags                = var.tags
 }
 
