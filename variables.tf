@@ -220,3 +220,9 @@ variable "fslogix"{
   description = "Enable FSLogix for the pool."
   default     = false
 }
+
+variable "vnet_rg"{
+  type        = string
+  description = "The resource group of the virtual network."
+  nullable    = false
+}
