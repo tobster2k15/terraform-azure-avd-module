@@ -211,7 +211,7 @@ resource "azurerm_storage_share" "FSShare" {
   enabled_protocol = "SMB"
 
 
-  storage_account_name = azurerm_storage_account.storage[*].name
+  storage_account_name = azurerm_storage_account.storage[0].name
   depends_on           = [azurerm_storage_account.storage]
   lifecycle { ignore_changes = [name, quota, enabled_protocol] }
 }
