@@ -211,8 +211,8 @@ resource "azurerm_storage_share" "FSShare" {
   enabled_protocol = "SMB"
 
 
-  storage_account_name = azurerm_storage_account.storage.name
-  depends_on           = [azurerm_storage_account.storage]
+  storage_account_name = azurerm_storage_account.storage[count.index].name
+  depends_on           = [azurerm_storage_account[count.index].storage]
   lifecycle { ignore_changes = [name, quota, enabled_protocol] }
 }
 
@@ -257,7 +257,7 @@ resource "azurerm_private_endpoint" "endpoint_st" {
 
   private_service_connection {
     name                           = local.psc_name
-    private_connection_resource_id = azurerm_storage_account.storage.id
+    private_connection_resource_id = azurerm_storage_account.storage[count.index].id
     is_manual_connection           = false
     subresource_names              = ["file"]
   }
