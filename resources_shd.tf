@@ -174,7 +174,7 @@ resource "azurerm_user_assigned_identity" "mi" {
   location            = azurerm_resource_group.myrg_shd.location
 }
 resource "azurerm_resource_group" "myrg_shd" {
-  name     = var.fslogx == true  ? || var.sql_enabled == true "rg-${var.usecase}-${var.environment_shd}-001" : null
+  name     = var.fslogx == true || var.sql_enabled == true ? "rg-${var.usecase}-${var.environment_shd}-001" : null
   location = var.location
   tags     = var.tags
 }
