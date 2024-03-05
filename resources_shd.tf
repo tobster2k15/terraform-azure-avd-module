@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "myrg_shd" {
   count    = var.fslogix == true ? 1 : 0
-  name     = var.rg_name_shd
+  name     = var.rg_name_shd[count.index]
   location = var.location
   tags     = var.tags
 }
@@ -178,8 +178,8 @@ resource "azurerm_resource_group" "myrg_shd" {
 resource "azurerm_user_assigned_identity" "mi" {
   count               = var.fslogix == true ? 1 : 0
   name                = "id-avd-fslogix-we-${var.business_unit}"
-  resource_group_name = azurerm_resource_group.myrg_shd.name
-  location            = azurerm_resource_group.myrg_shd.location
+  resource_group_name = azurerm_resource_group.myrg_shd.name[count.index]
+  location            = azurerm_resource_group.myrg_shd.location[count.index]
 }
 
 ## Azure Storage Accounts requires a globally unique names
@@ -187,9 +187,9 @@ resource "azurerm_user_assigned_identity" "mi" {
 ## Create a File Storage Account 
 resource "azurerm_storage_account" "storage" {
   count                             = var.fslogix == true ? 1 : 0
-  name                              = var.st_name
-  resource_group_name               = azurerm_resource_group.myrg_shd.name
-  location                          = azurerm_resource_group.myrg_shd.location
+  name                              = "var.st_name"
+  resource_group_name               = azurerm_resource_group.myrg_shd.name[count.index]
+  location                          = azurerm_resource_group.myrg_shd.location[count.index]
   min_tls_version                   = "TLS1_2"
   account_kind                      = var.st_account_kind
   account_tier                      = var.st_account_tier
@@ -240,7 +240,7 @@ resource "azurerm_private_dns_zone" "dnszone_st" {
 resource "azurerm_private_dns_a_record" "dnszone_st" {
   count               = var.fslogix == true ? 1 : 0
   name                = "${var.st_name}.file.core.windows.net"
-  zone_name           = azurerm_private_dns_zone.dnszone_st.name
+  zone_name           = azurerm_private_dns_zone.dnszone_st.name[count.index]
   resource_group_name = var.vnet_rg
   ttl                 = 300
   records             = [azurerm_private_endpoint.endpoint_st.private_service_connection.0.private_ip_address]
@@ -250,8 +250,8 @@ resource "azurerm_private_dns_a_record" "dnszone_st" {
 resource "azurerm_private_endpoint" "endpoint_st" {
   count               = var.fslogix == true ? 1 : 0
   name                = local.pep_name
-  location            = azurerm_resource_group.myrg_shd.location
-  resource_group_name = azurerm_resource_group.myrg_shd.name
+  location            = azurerm_resource_group.myrg_shd.location[count.index]
+  resource_group_name = azurerm_resource_group.myrg_shd.name[count.index]
   subnet_id           = var.subnet_id
   tags                = var.tags
 
@@ -281,7 +281,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
   count                 = var.fslogix == true ? 1 : 0
   name                  = "azfilelink-${var.business_unit}"
   resource_group_name   = var.vnet_rg
-  private_dns_zone_name = azurerm_private_dns_zone.dnszone_st.name
+  private_dns_zone_name = azurerm_private_dns_zone.dnszone_st.name[count.index]
   virtual_network_id    = var.vnet_id
 
   lifecycle { ignore_changes = [tags] }
