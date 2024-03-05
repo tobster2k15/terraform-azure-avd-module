@@ -187,7 +187,7 @@ resource "azurerm_user_assigned_identity" "mi" {
 ## Create a File Storage Account 
 resource "azurerm_storage_account" "storage" {
   count                             = var.fslogix == true ? 1 : 0
-  name                              = "var.st_name"
+  name                              = var.st_name
   resource_group_name               = azurerm_resource_group.myrg_shd[count.index].name
   location                          = azurerm_resource_group.myrg_shd[count.index].location
   min_tls_version                   = "TLS1_2"
