@@ -243,7 +243,7 @@ resource "azurerm_private_dns_a_record" "dnszone_st" {
   zone_name           = azurerm_private_dns_zone.dnszone_st[count.index].name
   resource_group_name = var.vnet_rg
   ttl                 = 300
-  records             = [azurerm_private_endpoint[count.index].endpoint_st.private_service_connection.0.private_ip_address]
+  records             = [azurerm_private_endpoint.endpoint_st[count.index].private_service_connection.0.private_ip_address]
   tags                = var.tags
 }
 
@@ -269,7 +269,7 @@ resource "azurerm_private_endpoint" "endpoint_st" {
 
 # Deny Traffic from Public Networks with white list exceptions
 resource "azurerm_storage_account_network_rules" "stfw" {
-  storage_account_id              = azurerm_storage_account.storage.id
+  storage_account_id              = azurerm_storage_account.storage[count.index].id
   default_action                  = "Deny"
   bypass                          = ["AzureServices", "Metrics", "Logging"]
   depends_on                      = [azurerm_storage_share.FSShare,
