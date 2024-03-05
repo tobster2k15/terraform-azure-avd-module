@@ -1,3 +1,9 @@
+resource "azurerm_resource_group" "myrg_shd" {
+  name     = var.fslogix == true || var.sql_enabled == true ? "rg-test-shd-001" : "test"
+  location = var.location
+  tags     = var.tags
+}
+
 # resource "azurerm_user_assigned_identity" "aib" {
 #   name                = local.managed_id_name
 #   resource_group_name = azurerm_resource_group.myrg_shd.name
@@ -173,16 +179,12 @@ resource "azurerm_user_assigned_identity" "mi" {
   resource_group_name = azurerm_resource_group.myrg_shd.name
   location            = azurerm_resource_group.myrg_shd.location
 }
-resource "azurerm_resource_group" "myrg_shd" {
-  name     = var.fslogix == true || var.sql_enabled == true ? "rg-test-shd-001" : "test"
-  location = var.location
-  tags     = var.tags
-}
+
 ## Azure Storage Accounts requires a globally unique names
 ## https://docs.microsoft.com/azure/storage/common/storage-account-overview
 ## Create a File Storage Account 
 resource "azurerm_storage_account" "storage" {
-  name                              = var.fslogix == true ? local.st_name : null
+  name                              = var.fslogix == true ? "dbawdbakdjwlajwdoiwjdoaw": null
   resource_group_name               = azurerm_resource_group.myrg_shd.name
   location                          = azurerm_resource_group.myrg_shd.location
   min_tls_version                   = "TLS1_2"
@@ -211,17 +213,17 @@ resource "azurerm_storage_share" "FSShare" {
   lifecycle { ignore_changes = [name, quota, enabled_protocol] }
 }
 
-resource "azurerm_role_assignment" "af_role_prd" {
-  scope              = azurerm_storage_account.storage.id
-  role_definition_id = data.azurerm_role_definition.storage_role.id
-  principal_id       = data.azuread_group.user_group_prd.id
-}
+# resource "azurerm_role_assignment" "af_role_prd" {
+#   scope              = azurerm_storage_account.storage.id
+#   role_definition_id = data.azurerm_role_definition.storage_role.id
+#   principal_id       = data.azuread_group.user_group_prd.id
+# }
 
-resource "azurerm_role_assignment" "af_role_dev" {
-  scope              = azurerm_storage_account.storage.id
-  role_definition_id = data.azurerm_role_definition.storage_role.id
-  principal_id       = data.azuread_group.user_group_dev.id
-}
+# resource "azurerm_role_assignment" "af_role_dev" {
+#   scope              = azurerm_storage_account.storage.id
+#   role_definition_id = data.azurerm_role_definition.storage_role.id
+#   principal_id       = data.azuread_group.user_group_dev.id
+# }
 
 
 #Get Private DNS Zone for the Storage Private Endpoints

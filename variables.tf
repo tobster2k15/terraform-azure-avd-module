@@ -238,3 +238,27 @@ variable "vnet_id" {
   description = "The ID of the virtual network."
   nullable    = false
 }
+
+variable "location"{ 
+  type        = string
+  description = "The location of the virtual network."
+  nullable    = false
+}
+
+variable "st_account_kind"{ 
+  type        = string
+  description = "The kind of storage account."
+  default     = "FileStorage"
+}
+
+variable "st_account_tier"{ 
+  type        = string
+  description = "The tier of the storage account."
+  default     = "Premium"
+}
+
+variable "st_account_replication"{ 
+  type        = string
+  description = "The replication of the storage account."
+  default     = "LRS"
+}
