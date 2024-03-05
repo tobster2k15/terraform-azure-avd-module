@@ -226,3 +226,9 @@ variable "vnet_rg"{
   description = "The resource group of the virtual network."
   nullable    = false
 }
+
+variable "sql_enabled" {
+  type        = bool
+  description = "Enable SQL for the pool."
+  default     = false
+}

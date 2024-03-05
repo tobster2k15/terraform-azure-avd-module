@@ -37,7 +37,7 @@ resource "azurerm_virtual_desktop_host_pool" "pool" {
       custom_rdp_properties
     ]
   }
-  tags = local.common_tags
+  tags = var.tags
 }
 # The hostpools registration token. Used by the DSC extension/AVD agent to tie the virtual machine to the hostpool as a "Sessionhost."
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_host_pool_registration_info
@@ -53,7 +53,7 @@ resource "azurerm_virtual_desktop_workspace" "workspace" {
   description         = "The ${local.prefix}-WS was created with Terraform."
   resource_group_name = azurerm_resource_group.rg_name.name
   location            = azurerm_resource_group.rg_name.location
-  tags                = local.common_tags
+  tags                = var.tags
   lifecycle {
     ignore_changes = [
       description
@@ -71,7 +71,7 @@ resource "azurerm_virtual_desktop_application_group" "app_group" {
   host_pool_id        = azurerm_virtual_desktop_host_pool.pool.id
   location            = azurerm_resource_group.rg_name.location
   type                = var.pool_type == "Application" ? "RemoteApp" : "Desktop"
-  tags                = local.common_tags
+  tags                = var.tags
 }
 # The association object ties the application group(s) to the workspace.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace_application_group_association
@@ -139,7 +139,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
   depends_on = [
     azurerm_network_interface.nic
   ]
-  tags = merge(local.common_tags, {
+  tags = merge(var.tags, {
     Automation = "OU check - AVD"
   })
 }
@@ -155,7 +155,7 @@ resource "azurerm_network_interface" "nic" {
     subnet_id                     = module.vnet_subnets.id
     private_ip_address_allocation = "Dynamic"
   }
-  tags = local.common_tags
+  tags = var.tags
 }
 # Required extension - the DSC installs all three agents and passes the registration token to the AVD agent.
 # As local.token is updated dynamically, the lifecycle block is used to prevent needless recreation of the resource.

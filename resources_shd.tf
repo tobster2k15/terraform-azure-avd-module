@@ -88,7 +88,7 @@
 ### DNS Settings for SQL DB ###
 resource "azurerm_private_dns_zone" "mydnszone_sql" {
   name                = var.sql_enabled == true ? "privatelink.mysql.database.azure.com" : null
-  resource_group_name = azurerm_resource_group.myvnetrg.name
+  resource_group_name = var.vnet_rg
   tags                = var.tags
 }
 
@@ -96,14 +96,14 @@ resource "azurerm_private_dns_zone_virtual_network_link" "mylink_sql" {
   name                  = var.sql_enabled == true ? "azsqllink-${var.business_unit}" : null
   private_dns_zone_name = azurerm_private_dns_zone.mydnszone_sql.name
   virtual_network_id    = azurerm_virtual_network.myvnet.id
-  resource_group_name   = azurerm_resource_group.myvnetrg.name
+  resource_group_name   = var.vnet_rg
   tags                  = var.tags
 }
 
 resource "azurerm_private_endpoint" "endpoint_sql" {
   name                = var.sql_enabled == true ? "${local.pep_name}-sql" : null
   location            = azurerm_resource_group.myrg_shd.location
-  resource_group_name = azurerm_resource_group.myvnetrg.name
+  resource_group_name = var.vnet_rg
   subnet_id           = azurerm_subnet.mysubnet_shd.id
   tags                = var.tags
 
@@ -122,7 +122,7 @@ resource "azurerm_private_endpoint" "endpoint_sql" {
 resource "azurerm_private_dns_a_record" "dnszone_sql" {
   name                = var.sql_enabled == true ? "${local.sql_name}.mysql.database.azure.com" : null
   zone_name           = azurerm_private_dns_zone.mydnszone_sql.name
-  resource_group_name = azurerm_resource_group.myvnetrg.name
+  resource_group_name = var.vnet_rg
   ttl                 = 300
   records             = [azurerm_private_endpoint.endpoint_sql.private_service_connection.0.private_ip_address]
   tags                = var.tags
@@ -174,7 +174,7 @@ resource "azurerm_user_assigned_identity" "mi" {
   location            = azurerm_resource_group.myrg_shd.location
 }
 resource "azurerm_resource_group" "myrg_shd" {
-  name     = var.fslogx == true || var.sql_enabled == true ? "rg-${var.usecase}-${var.environment_shd}-001" : null
+  name     = var.fslogx == true || var.sql_enabled == true ? "rg-test-shd-001" : "test"
   location = var.location
   tags     = var.tags
 }
@@ -227,14 +227,14 @@ resource "azurerm_role_assignment" "af_role_dev" {
 #Get Private DNS Zone for the Storage Private Endpoints
 resource "azurerm_private_dns_zone" "dnszone_st" {
   name                = var.fslogix == true ? "privatelink.file.core.windows.net" : null
-  resource_group_name = azurerm_resource_group.myvnetrg.name
+  resource_group_name = var.vnet_rg
   tags                = var.tags
 }
 
 resource "azurerm_private_dns_a_record" "dnszone_st" {
   name                = var.fslogix == true ? "${local.st_name}.file.core.windows.net" : null
   zone_name           = azurerm_private_dns_zone.dnszone_st.name
-  resource_group_name = azurerm_resource_group.myvnetrg.name
+  resource_group_name = var.vnet_rg
   ttl                 = 300
   records             = [azurerm_private_endpoint.endpoint_st.private_service_connection.0.private_ip_address]
   tags                = var.tags
@@ -271,7 +271,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
 
 resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
   name                  = var.fslogix == true ? "azfilelink-${var.business_unit}" : null
-  resource_group_name   = azurerm_resource_group.myvnetrg.name
+  resource_group_name   = var.vnet_rg
   private_dns_zone_name = azurerm_private_dns_zone.dnszone_st.name
   virtual_network_id    = azurerm_virtual_network.myvnet.id
 
