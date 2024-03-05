@@ -2,7 +2,7 @@
 #   name                = local.managed_id_name
 #   resource_group_name = azurerm_resource_group.myrg_shd.name
 #   location            = azurerm_resource_group.myrg_shd.location
-#   tags                = local.common_tags
+#   tags                = var.tags
 # }
 
 # resource "azurerm_role_definition" "aib" {
@@ -62,7 +62,7 @@
 #   name                = local.img_gal_name
 #   resource_group_name = azurerm_resource_group.myrg_shd.name
 #   location            = azurerm_resource_group.myrg_shd.location
-#   tags                = local.common_tags
+#   tags                = var.tags
 # }
 
 # resource "azurerm_shared_image" "aib" {
@@ -72,7 +72,7 @@
 #   location            = azurerm_resource_group.myrg_shd.location
 #   os_type             = "Windows"
 #   hyper_v_generation  = "V2"
-#   tags                = local.common_tags
+#   tags                = var.tags
 
 #   identifier {
 #     publisher = var.publisher
@@ -89,7 +89,7 @@
 resource "azurerm_private_dns_zone" "mydnszone_sql" {
   name                = var.sql_enabled == true ? "privatelink.mysql.database.azure.com" : null
   resource_group_name = azurerm_resource_group.myvnetrg.name
-  tags                = local.common_tags
+  tags                = var.tags
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "mylink_sql" {
@@ -97,7 +97,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "mylink_sql" {
   private_dns_zone_name = azurerm_private_dns_zone.mydnszone_sql.name
   virtual_network_id    = azurerm_virtual_network.myvnet.id
   resource_group_name   = azurerm_resource_group.myvnetrg.name
-  tags                  = local.common_tags
+  tags                  = var.tags
 }
 
 resource "azurerm_private_endpoint" "endpoint_sql" {
@@ -105,7 +105,7 @@ resource "azurerm_private_endpoint" "endpoint_sql" {
   location            = azurerm_resource_group.myrg_shd.location
   resource_group_name = azurerm_resource_group.myvnetrg.name
   subnet_id           = azurerm_subnet.mysubnet_shd.id
-  tags                = local.common_tags
+  tags                = var.tags
 
   private_service_connection {
     name                           = "${local.psc_name}-sql"
@@ -125,7 +125,7 @@ resource "azurerm_private_dns_a_record" "dnszone_sql" {
   resource_group_name = azurerm_resource_group.myvnetrg.name
   ttl                 = 300
   records             = [azurerm_private_endpoint.endpoint_sql.private_service_connection.0.private_ip_address]
-  tags                = local.common_tags
+  tags                = var.tags
 }
 
 ### SQL DB Server ### login and pw in tf cloud 
@@ -140,7 +140,7 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   zone                          = "1"
   backup_retention_days         = 30
   geo_redundant_backup_enabled  = false
-  tags                          = local.common_tags
+  tags                          = var.tags
   storage{
     size_gb           = 25
     io_scaling_enabled = true
@@ -173,7 +173,11 @@ resource "azurerm_user_assigned_identity" "mi" {
   resource_group_name = azurerm_resource_group.myrg_shd.name
   location            = azurerm_resource_group.myrg_shd.location
 }
-
+resource "azurerm_resource_group" "myrg_shd" {
+  name     = var.fslogx == true  ? || var.sql_enabled == true "rg-${var.usecase}-${var.environment_shd}-001" : null
+  location = var.location
+  tags     = var.tags
+}
 ## Azure Storage Accounts requires a globally unique names
 ## https://docs.microsoft.com/azure/storage/common/storage-account-overview
 ## Create a File Storage Account 
@@ -190,7 +194,7 @@ resource "azurerm_storage_account" "storage" {
   cross_tenant_replication_enabled  = false
   enable_https_traffic_only         = true
   large_file_share_enabled          = true
-  tags                              = local.common_tags
+  tags                              = var.tags
   identity {
     type = "SystemAssigned"
   }
@@ -224,7 +228,7 @@ resource "azurerm_role_assignment" "af_role_dev" {
 resource "azurerm_private_dns_zone" "dnszone_st" {
   name                = var.fslogix == true ? "privatelink.file.core.windows.net" : null
   resource_group_name = azurerm_resource_group.myvnetrg.name
-  tags                = local.common_tags
+  tags                = var.tags
 }
 
 resource "azurerm_private_dns_a_record" "dnszone_st" {
@@ -233,7 +237,7 @@ resource "azurerm_private_dns_a_record" "dnszone_st" {
   resource_group_name = azurerm_resource_group.myvnetrg.name
   ttl                 = 300
   records             = [azurerm_private_endpoint.endpoint_st.private_service_connection.0.private_ip_address]
-  tags                = local.common_tags
+  tags                = var.tags
 }
 
 resource "azurerm_private_endpoint" "endpoint_st" {
@@ -241,7 +245,7 @@ resource "azurerm_private_endpoint" "endpoint_st" {
   location            = azurerm_resource_group.myrg_shd.location
   resource_group_name = azurerm_resource_group.myrg_shd.name
   subnet_id           = azurerm_subnet.mysubnet_shd_st.id
-  tags                = local.common_tags
+  tags                = var.tags
 
   private_service_connection {
     name                           = local.psc_name
