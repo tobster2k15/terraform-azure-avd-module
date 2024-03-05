@@ -262,3 +262,15 @@ variable "st_account_replication"{
   description = "The replication of the storage account."
   default     = "LRS"
 }
+
+variable "business_unit" {
+  type        = string
+  description = "The business unit of the pool."
+  default     = "IT"
+}
+
+variable "usecase" {
+  type        = string
+  description = "The usecase of the pool."
+  default     = "vdi"
+}

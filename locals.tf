@@ -39,47 +39,45 @@ locals {
 #Namingconvention: Counter wird bei den einzelnen Namen mit angegeben
 locals {
 #Prod Naming
-# rg_name             =   "rg-${var.usecase}-${var.environment}-001" #bei count => 2 muss instance auskommentiert werden
-# vm_name             =   "vm${var.usecase_for_vm}${var.environment}" #${var.instance}
-# ipc_name            =   "ipc-nic-${var.environment}-" #${var.instance}
-# rt_name             =   "rt-${var.usecase}-default"
-# osd_name            =   "osdisk${local.vm_name}"
-# vdpool_name         =   "vdpool-${var.usecase}-${var.environment}-001"
-# nic_name            =   "nic-${var.usecase}-${var.environment}-" #${var.instance} #Resource Group for 
-# vds_name            =   "vdscaling-${var.usecase}-${var.environment}-001"
-# #Network Naming
-# rg_vnet_name        =   "rg-vnet-${var.usecase}-${var.environment}-${var.region}-001"
-# vnet_name           =   "vnet-${var.usecase}-${var.environment}-${var.region}-001"
-# snet_name           =   "snet-${var.usecase}-${var.environment}-001"
-# snet_name_dev       =   "snet-${var.usecase}-${var.environment_dev}-001"
-# snet_name_shd       =   "snet-${var.usecase}-${var.environment_shd}-"
-# nsg_name            =   "nsg-${var.usecase}-${var.environment}-${var.region}-001"
-# pip_name            =   "pip-${var.usecase}-${var.environment}-001" #${var.instance}
-# pep_name            =   "pep-${var.usecase}-${var.environment_shd}-${var.region}"
-# psc_name            =   "psc-${var.usecase}-${var.environment}-${var.region}"
-# peering_name_1      =   "${local.vnet_name}-to-${var.existing_vnet_name}"
-# peering_name_2      =   "${var.existing_vnet_name}-to-${local.vnet_name}"
-# #DEV Naming
-# rg_name_dev         =   "rg-${var.usecase}-${var.environment_dev}-001"
-# vm_name_dev         =   "vm${var.usecase_for_vm}${var.environment_dev}-001" 
-# ipc_name_dev        =   "ipc-nic-${var.environment_dev}-001" 
-# osd_name_dev        =   "osdisk${local.vm_name_dev}001"
-# vdpool_name_dev     =   "vdpool-${var.usecase}-${var.environment_dev}-001"
-# nic_name_dev        =   "nic-${var.usecase}-${var.environment_dev}-001"
-# #SHD Naming
-# rg_name_shd         =   "rg-${var.usecase}-${var.environment_shd}-001"
-# st_name             =   "st${var.usecase}vdi${var.environment}001"
-# st_share_name       =   "share${var.usecase}fslogix01"
-# sql_name            =   "sql-${var.usecase}-${var.environment_shd}-001"
-# sql_db_prd          =   "sqldb-${var.usecase}-production"
-# sql_db_archive      =   "sqldb-${var.usecase}-archive"
-# rg_name_bck         =   "rg-${var.usecase}-${var.environment_shd}-002"
-# bck_vault_name      =   "bvault-${var.usecase}-${var.environment_shd}-001"
-# image_builder_name  =   "aib-${var.usecase}-${var.environment}-${local.current_day}-001" 
-# managed_id_name     =   "id-aib-${var.usecase}-${var.environment}"
-# rbac_name           =   "id-RBAC-${var.usecase}-${var.environment}"
-# img_gal_name        =   "gal_${var.usecase}_${var.environment_shd}"
-# img_version         =   "it-${var.usecase}-${var.environment_shd}-001"
+rg_name             =   "rg-${var.usecase}-prd-001" #bei count => 2 muss instance auskommentiert werden
+vm_name             =   "vm${var.usecase_for_vm}prd" #${var.instance}
+ipc_name            =   "ipc-nic-prd-" #${var.instance}
+rt_name             =   "rt-${var.usecase}-default"
+osd_name            =   "osdisk${local.vm_name}"
+vdpool_name         =   "vdpool-${var.usecase}-prd-001"
+nic_name            =   "nic-${var.usecase}-prd-" #${var.instance} #Resource Group for 
+vds_name            =   "vdscaling-${var.usecase}-prd-001"
+#Network Naming
+rg_vnet_name        =   "rg-vnet-${var.usecase}-prd-${var.region}-001"
+vnet_name           =   "vnet-${var.usecase}-prd-${var.region}-001"
+snet_name           =   "snet-${var.usecase}-prd-001"
+snet_name_dev       =   "snet-${var.usecase}-dev-001"
+snet_name_shd       =   "snet-${var.usecase}-shd-"
+nsg_name            =   "nsg-${var.usecase}-prd-${var.region}-001"
+pip_name            =   "pip-${var.usecase}-prd-001" #${var.instance}
+pep_name            =   "pep-${var.usecase}-shd-${var.region}"
+psc_name            =   "psc-${var.usecase}-prd-${var.region}"
+#DEV Naming
+rg_name_dev         =   "rg-${var.usecase}-dev-001"
+vm_name_dev         =   "vm${var.usecase_for_vm}dev-001" 
+ipc_name_dev        =   "ipc-nic-dev-001" 
+osd_name_dev        =   "osdisk${local.vm_name_dev}001"
+vdpool_name_dev     =   "vdpool-${var.usecase}-dev-001"
+nic_name_dev        =   "nic-${var.usecase}-dev-001"
+#SHD Naming
+rg_name_shd         =   "rg-${var.usecase}-shd-001"
+st_name             =   "st${var.usecase}vdiprd001"
+st_share_name       =   "share${var.usecase}fslogix01"
+sql_name            =   "sql-${var.usecase}-shd-001"
+sql_db_prd          =   "sqldb-${var.usecase}-production"
+sql_db_archive      =   "sqldb-${var.usecase}-archive"
+rg_name_bck         =   "rg-${var.usecase}-shd-002"
+bck_vault_name      =   "bvault-${var.usecase}-shd-001"
+image_builder_name  =   "aib-${var.usecase}-prd-${local.current_day}-001" 
+managed_id_name     =   "id-aib-${var.usecase}-prd"
+rbac_name           =   "id-RBAC-${var.usecase}-prd"
+img_gal_name        =   "gal_${var.usecase}_shd"
+img_version         =   "it-${var.usecase}-shd-001"
 
 # current_timestamp   =   timestamp()
 # current_day         =   formatdate("YYYY-MM-DD", local.current_timestamp)
