@@ -52,7 +52,7 @@ resource "azurerm_virtual_desktop_workspace" "workspace" {
   friendly_name       = "Virtual ${var.pool_type != "Application" ? "Applications" : "Desktop"} Workspace"
   description         = "The ${local.prefix}-WS was created with Terraform."
   resource_group_name = var.resource_group_name
-  location            = azurerm_resource_group.rg_name.location
+  location            = var.location
   tags                = var.tags
   lifecycle {
     ignore_changes = [

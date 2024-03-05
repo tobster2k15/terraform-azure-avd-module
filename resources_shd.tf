@@ -220,7 +220,7 @@ resource "azurerm_storage_share" "FSShare" {
 resource "azurerm_role_assignment" "af_role" {
   scope              = azurerm_storage_account.storage[count.index].id
   role_definition_id = data.azurerm_role_definition.storage_role.id
-  principal_id       = data.azuread_group.st_group.id
+  principal_id       = data.azuread_group.st_group[each.key].id
 }
 
 #Get Private DNS Zone for the Storage Private Endpoints

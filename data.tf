@@ -3,7 +3,7 @@ data "azurerm_role_definition" "avduser_role" {
 }
 # Each AAD group needed for permissioning. 
 data "azuread_group" "avd_group_prd" {
-  for_each         = toset(local.aad_group_list)
+  for_each         = toset(var.avd_access_prd)
   display_name     = each.value
   security_enabled = true
 }
