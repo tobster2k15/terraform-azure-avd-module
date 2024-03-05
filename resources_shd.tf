@@ -211,7 +211,7 @@ resource "azurerm_storage_share" "FSShare" {
   enabled_protocol = "SMB"
 
 
-  storage_account_name = azurerm_storage_account.storage[0].name
+  storage_account_name = azurerm_storage_account.storage[*].name
   depends_on           = [azurerm_storage_account.storage]
   lifecycle { ignore_changes = [name, quota, enabled_protocol] }
 }
@@ -263,13 +263,13 @@ resource "azurerm_private_endpoint" "endpoint_st" {
   }
   private_dns_zone_group {
     name                 = "dns-file-${var.business_unit}"
-    private_dns_zone_ids = azurerm_private_dns_zone.dnszone_st.*.id
+    private_dns_zone_ids = azurerm_private_dns_zone.dnszone_st[count.index].*.id
   }
 }
 
 # Deny Traffic from Public Networks with white list exceptions
 resource "azurerm_storage_account_network_rules" "stfw" {
-  storage_account_id              = azurerm_storage_account.storage[count.index].id
+  storage_account_id              = azurerm_storage_account.storage[*].id
   default_action                  = "Deny"
   bypass                          = ["AzureServices", "Metrics", "Logging"]
   depends_on                      = [azurerm_storage_share.FSShare,
