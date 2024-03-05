@@ -1,5 +1,6 @@
 resource "azurerm_resource_group" "myrg_shd" {
-  name     = var.fslogix == true || var.sql_enabled == true ? "rg-test-shd-001" : null
+  count    = var.fslogix == true ? 1 : 0
+  name     = var.rg_name_shd
   location = var.location
   tags     = var.tags
 }
@@ -175,6 +176,7 @@ resource "azurerm_resource_group" "myrg_shd" {
 ############################################################################################################
 
 resource "azurerm_user_assigned_identity" "mi" {
+  count               = var.fslogix == true ? 1 : 0
   name                = "id-avd-fslogix-we-${var.business_unit}"
   resource_group_name = azurerm_resource_group.myrg_shd.name
   location            = azurerm_resource_group.myrg_shd.location
@@ -184,7 +186,8 @@ resource "azurerm_user_assigned_identity" "mi" {
 ## https://docs.microsoft.com/azure/storage/common/storage-account-overview
 ## Create a File Storage Account 
 resource "azurerm_storage_account" "storage" {
-  name                              = var.fslogix == true ? "dbawdbakdjwlajwdoiwjdoaw": null
+  count                             = var.fslogix == true ? 1 : 0
+  name                              = var.st_name
   resource_group_name               = azurerm_resource_group.myrg_shd.name
   location                          = azurerm_resource_group.myrg_shd.location
   min_tls_version                   = "TLS1_2"
@@ -228,13 +231,15 @@ resource "azurerm_storage_share" "FSShare" {
 
 #Get Private DNS Zone for the Storage Private Endpoints
 resource "azurerm_private_dns_zone" "dnszone_st" {
-  name                = var.fslogix == true ? "privatelink.file.core.windows.net" : null
+  count               = var.fslogix == true ? 1 : 0
+  name                = "privatelink.file.core.windows.net"
   resource_group_name = var.vnet_rg
   tags                = var.tags
 }
 
 resource "azurerm_private_dns_a_record" "dnszone_st" {
-  name                = var.fslogix == true ? "${local.st_name}.file.core.windows.net" : null
+  count               = var.fslogix == true ? 1 : 0
+  name                = "${var.st_name}.file.core.windows.net"
   zone_name           = azurerm_private_dns_zone.dnszone_st.name
   resource_group_name = var.vnet_rg
   ttl                 = 300
@@ -243,7 +248,8 @@ resource "azurerm_private_dns_a_record" "dnszone_st" {
 }
 
 resource "azurerm_private_endpoint" "endpoint_st" {
-  name                = var.fslogix == true ? local.pep_name : null
+  count               = var.fslogix == true ? 1 : 0
+  name                = local.pep_name
   location            = azurerm_resource_group.myrg_shd.location
   resource_group_name = azurerm_resource_group.myrg_shd.name
   subnet_id           = var.subnet_id
@@ -272,7 +278,8 @@ resource "azurerm_storage_account_network_rules" "stfw" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
-  name                  = var.fslogix == true ? "azfilelink-${var.business_unit}" : null
+  count                 = var.fslogix == true ? 1 : 0
+  name                  = "azfilelink-${var.business_unit}"
   resource_group_name   = var.vnet_rg
   private_dns_zone_name = azurerm_private_dns_zone.dnszone_st.name
   virtual_network_id    = var.vnet_id

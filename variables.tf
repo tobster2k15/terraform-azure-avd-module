@@ -298,3 +298,15 @@ variable "resource_group_name"{
   description = "The name of the resource group."
   default     = null
 }
+
+variable "st_name" {
+  type        = string
+  description = "The name of the storage account."
+  default     = null
+}
+
+variable "rg_name_shd" {
+  type        = string
+  description = "The name of the storage share."
+  default     = "rg-test-001"
+}
