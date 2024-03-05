@@ -139,10 +139,10 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   name                          = var.sql_enabled == true ? local.sql_name : null
   resource_group_name           = azurerm_resource_group.myrg_shd.name
   location                      = azurerm_resource_group.myrg_shd.location
-  administrator_login           = var.sql_admin_username
-  administrator_password        = var.sql_admin_password
-  sku_name                      = var.sql_sku
-  version                       = var.sql_version
+  administrator_login           = var.sql_enabled == true ? "admin123" : null
+  administrator_password        = var.sql_enabled == true ? "Start123$" : null
+  sku_name                      = var.sql_enabled == true ? "B_Standard_B2ms" : null
+  version                       = var.sql_enabled == true ? "8.0.21" : null
   zone                          = "1"
   backup_retention_days         = 30
   geo_redundant_backup_enabled  = false

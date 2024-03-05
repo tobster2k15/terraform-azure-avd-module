@@ -2,7 +2,7 @@
 ### Resources
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
 resource "azurerm_resource_group" "rg_name" {
-  name     = var.rg
+  name     = var.rg == null ? "test-rg" : var.rg
   location = var.region
 }
 # The hostpool uses logic from var.pool_type to set the majority of the fields. 
