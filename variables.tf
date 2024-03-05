@@ -286,3 +286,9 @@ variable "subnet_id" {
   description = "The ID of the subnet."
   default     = null
 }
+
+variable "subnet_id_prd" {
+  type        = string
+  description = "The ID of the subnet."
+  default     = null
+}

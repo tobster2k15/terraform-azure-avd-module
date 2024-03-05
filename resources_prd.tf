@@ -67,7 +67,7 @@ resource "azurerm_virtual_desktop_workspace" "workspace" {
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_application_group
 resource "azurerm_virtual_desktop_application_group" "app_group" {
   for_each            = toset(local.aad_group_list)
-  name                = "${local.prefix}-AG${format("%02d", "${index(local.aad_group_list, each.value) + 1}")}"
+  name                = "${local.prefix}-AG${format("%03d", "${index(local.aad_group_list, each.value) + 1}")}"
   friendly_name       = "${each.value} application group"
   description         = "${each.value} application group - created with Terraform."
   resource_group_name = azurerm_resource_group.rg_name.name
@@ -115,7 +115,7 @@ resource "azurerm_virtual_desktop_application" "application" {
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine.html
 resource "azurerm_windows_virtual_machine" "vm" {
   count                 = var.vmcount
-  name                  = "${local.prefix}-${format("%02d", count.index)}"
+  name                  = "${local.prefix}-${format("%03d", count.index)}"
   resource_group_name   = azurerm_resource_group.rg_name.name
   location              = azurerm_resource_group.rg_name.location
   size                  = var.vmsize
@@ -125,7 +125,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
   admin_username        = var.local_admin
   admin_password        = var.local_pass
   os_disk {
-    name                 = "${local.prefix}-${format("%02d", count.index)}-disk"
+    name                 = "${local.prefix}-${format("%03d", count.index)}-disk"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
@@ -150,12 +150,12 @@ resource "azurerm_windows_virtual_machine" "vm" {
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface
 resource "azurerm_network_interface" "nic" {
   count               = var.vmcount
-  name                = "${local.prefix}-${format("%02d", count.index)}-nic"
+  name                = "${local.prefix}-${format("%03d", count.index)}-nic"
   resource_group_name = azurerm_resource_group.rg_name.name
   location            = azurerm_resource_group.rg_name.location
   ip_configuration {
-    name                          = "${lower(local.prefix)}_${format("%02d", count.index)}_config)"
-    subnet_id                     = module.vnet_subnets.id
+    name                          = "${lower(local.prefix)}_${format("%03d", count.index)}_config)"
+    subnet_id                     = var.subnet_id_prd
     private_ip_address_allocation = "Dynamic"
   }
   tags = var.tags
@@ -165,7 +165,7 @@ resource "azurerm_network_interface" "nic" {
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_extension.html
 resource "azurerm_virtual_machine_extension" "vm_dsc_ext" {
   count                      = var.vmcount
-  name                       = "${local.prefix}-${format("%02d", count.index)}-avd_dsc"
+  name                       = "${local.prefix}-${format("%03d", count.index)}-avd_dsc"
   virtual_machine_id         = azurerm_windows_virtual_machine.vm.*.id[count.index]
   publisher                  = "Microsoft.Powershell"
   type                       = "DSC"
@@ -201,7 +201,7 @@ PROTECTED_SETTINGS
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_extension.html
 resource "azurerm_virtual_machine_extension" "domain_join_ext" {
   count                      = local.extensions.domain_join
-  name                       = "${local.prefix}-${format("%02d", count.index)}-domainJoin"
+  name                       = "${local.prefix}-${format("%03d", count.index)}-domainJoin"
   virtual_machine_id         = azurerm_windows_virtual_machine.vm.*.id[count.index]
   publisher                  = "Microsoft.Compute"
   type                       = "JsonADDomainExtension"
