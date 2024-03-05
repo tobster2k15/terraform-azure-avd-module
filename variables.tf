@@ -232,3 +232,9 @@ variable "sql_enabled" {
   description = "Enable SQL for the pool."
   default     = false
 }
+
+variable "vnet_id" {
+  type        = string
+  description = "The ID of the virtual network."
+  nullable    = false
+}

@@ -1,7 +1,10 @@
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
 ### Resources
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
-
+resource "azurerm_resource_group" "rg_name" {
+  name     = var.rg
+  location = var.region
+}
 # The hostpool uses logic from var.pool_type to set the majority of the fields. 
 # Description and RDP properties are "changed" every deployment. Lifecycle block prevents this update. 
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_host_pool.html

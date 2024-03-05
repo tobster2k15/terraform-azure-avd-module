@@ -95,7 +95,7 @@ resource "azurerm_private_dns_zone" "mydnszone_sql" {
 resource "azurerm_private_dns_zone_virtual_network_link" "mylink_sql" {
   name                  = var.sql_enabled == true ? "azsqllink-${var.business_unit}" : null
   private_dns_zone_name = azurerm_private_dns_zone.mydnszone_sql.name
-  virtual_network_id    = azurerm_virtual_network.myvnet.id
+  virtual_network_id    = var.vnet_id
   resource_group_name   = var.vnet_rg
   tags                  = var.tags
 }
@@ -148,21 +148,21 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   depends_on = [azurerm_private_dns_zone_virtual_network_link.mylink_sql]
 }
 
-resource "azurerm_mysql_flexible_database" "mysqldb_prd" {
-  name                = local.sql_db_prd
-  resource_group_name = azurerm_resource_group.myrg_shd.name
-  server_name         = azurerm_mysql_flexible_server.mysql.name
-  charset             = var.sql_charset
-  collation           = var.sql_collation
-}
+# resource "azurerm_mysql_flexible_database" "mysqldb_prd" {
+#   name                = local.sql_db_prd
+#   resource_group_name = azurerm_resource_group.myrg_shd.name
+#   server_name         = azurerm_mysql_flexible_server.mysql.name
+#   charset             = var.sql_charset
+#   collation           = var.sql_collation
+# }
 
-resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
-  name                = local.sql_db_archive
-  resource_group_name = azurerm_resource_group.myrg_shd.name
-  server_name         = azurerm_mysql_flexible_server.mysql.name
-  charset             = var.sql_charset
-  collation           = var.sql_collation
-}
+# resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
+#   name                = local.sql_db_archive
+#   resource_group_name = azurerm_resource_group.myrg_shd.name
+#   server_name         = azurerm_mysql_flexible_server.mysql.name
+#   charset             = var.sql_charset
+#   collation           = var.sql_collation
+# }
 
 ############################################################################################################
 ########################################  Storage Account ##################################################
@@ -174,7 +174,7 @@ resource "azurerm_user_assigned_identity" "mi" {
   location            = azurerm_resource_group.myrg_shd.location
 }
 resource "azurerm_resource_group" "myrg_shd" {
-  name     = var.fslogx == true || var.sql_enabled == true ? "rg-test-shd-001" : "test"
+  name     = var.fslogix == true || var.sql_enabled == true ? "rg-test-shd-001" : "test"
   location = var.location
   tags     = var.tags
 }
@@ -273,7 +273,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
   name                  = var.fslogix == true ? "azfilelink-${var.business_unit}" : null
   resource_group_name   = var.vnet_rg
   private_dns_zone_name = azurerm_private_dns_zone.dnszone_st.name
-  virtual_network_id    = azurerm_virtual_network.myvnet.id
+  virtual_network_id    = var.vnet_id
 
   lifecycle { ignore_changes = [tags] }
 }
