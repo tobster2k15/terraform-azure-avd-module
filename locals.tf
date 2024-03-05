@@ -16,7 +16,7 @@ locals {
 }
 # Locates unique AAD groups for application group for_each loop. 
 locals {
-  # aad_group_list = var.application_map != null ? distinct(values({ for k, v in var.application_map : k => v.aad_group })) : ["${var.aad_group_desktop}"]
+  aad_group_list = var.application_map != null ? distinct(values({ for k, v in var.application_map : k => v.aad_group })) : ["${var.aad_group_desktop}"]
   applications   = var.application_map != null ? var.application_map : tomap({}) # Null is not accepted as for_each value, substituing for an empty map if null.
   st_access      = var.fslogix != null ? distinct(values({ for k, v in var.fslogix : k => v.st_access })) : ["${var.st_access}"]
 
