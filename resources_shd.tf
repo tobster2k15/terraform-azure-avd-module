@@ -206,12 +206,13 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_storage_share" "FSShare" {
+  count            = var.fslogix == true ? 1 : 0
   name             = "fslogix"
   quota            = "100"
   enabled_protocol = "SMB"
 
 
-  storage_account_name = try(azurerm_storage_account.storage[0].name, null)
+  storage_account_name = azurerm_storage_account.storage[count.index].name
   depends_on           = [azurerm_storage_account.storage]
   lifecycle { ignore_changes = [name, quota, enabled_protocol] }
 }
