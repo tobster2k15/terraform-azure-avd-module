@@ -212,7 +212,7 @@ resource "azurerm_storage_share" "FSShare" {
 
 
   storage_account_name = azurerm_storage_account.storage[count.index].name
-  depends_on           = [azurerm_storage_account[count.index].storage]
+  depends_on           = [azurerm_storage_account.storage]
   lifecycle { ignore_changes = [name, quota, enabled_protocol] }
 }
 
