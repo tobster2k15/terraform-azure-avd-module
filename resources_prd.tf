@@ -1,16 +1,13 @@
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
 ### Resources
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
-resource "azurerm_resource_group" "rg_name" {
-  name     = var.rg == null ? "test-rg" : var.rg
-  location = var.region
-}
+
 # The hostpool uses logic from var.pool_type to set the majority of the fields. 
 # Description and RDP properties are "changed" every deployment. Lifecycle block prevents this update. 
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_host_pool.html
 resource "azurerm_virtual_desktop_host_pool" "pool" {
-  resource_group_name              = azurerm_resource_group.rg_name.name
-  location                         = azurerm_resource_group.rg_name.location
+  resource_group_name              = var.resource_group_name
+  location                         = var.location
   name                             = "${local.prefix}-HP"
   friendly_name                    = "${local.prefix}-HP"
   validate_environment             = var.validate_environment
@@ -54,8 +51,8 @@ resource "azurerm_virtual_desktop_workspace" "workspace" {
   name                = "${local.prefix}-WS"
   friendly_name       = "Virtual ${var.pool_type != "Application" ? "Applications" : "Desktop"} Workspace"
   description         = "The ${local.prefix}-WS was created with Terraform."
-  resource_group_name = azurerm_resource_group.rg_name.name
-  location            = azurerm_resource_group.rg_name.location
+  resource_group_name = var.resource_group_name
+  location            = var.location
   tags                = var.tags
   lifecycle {
     ignore_changes = [
@@ -70,9 +67,9 @@ resource "azurerm_virtual_desktop_application_group" "app_group" {
   name                = "${local.prefix}-AG${format("%03d", "${index(local.aad_group_list, each.value) + 1}")}"
   friendly_name       = "${each.value} application group"
   description         = "${each.value} application group - created with Terraform."
-  resource_group_name = azurerm_resource_group.rg_name.name
+  resource_group_name = var.resource_group_name
   host_pool_id        = azurerm_virtual_desktop_host_pool.pool.id
-  location            = azurerm_resource_group.rg_name.location
+  location            = var.location
   type                = var.pool_type == "Application" ? "RemoteApp" : "Desktop"
   tags                = var.tags
 }
@@ -116,8 +113,8 @@ resource "azurerm_virtual_desktop_application" "application" {
 resource "azurerm_windows_virtual_machine" "vm" {
   count                 = var.vmcount
   name                  = "${local.prefix}-${format("%03d", count.index)}"
-  resource_group_name   = azurerm_resource_group.rg_name.name
-  location              = azurerm_resource_group.rg_name.location
+  resource_group_name   = var.resource_group_name
+  location              = var.location
   size                  = var.vmsize
   network_interface_ids = ["${azurerm_network_interface.nic.*.id[count.index]}"]
   provision_vm_agent    = true
@@ -151,8 +148,8 @@ resource "azurerm_windows_virtual_machine" "vm" {
 resource "azurerm_network_interface" "nic" {
   count               = var.vmcount
   name                = "${local.prefix}-${format("%03d", count.index)}-nic"
-  resource_group_name = azurerm_resource_group.rg_name.name
-  location            = azurerm_resource_group.rg_name.location
+  resource_group_name = var.resource_group_name
+  location            = var.location
   ip_configuration {
     name                          = "${lower(local.prefix)}_${format("%03d", count.index)}_config)"
     subnet_id                     = var.subnet_id_prd
