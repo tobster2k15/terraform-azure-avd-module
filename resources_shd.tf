@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "myrg_shd" {
   count    = var.fslogix == true ? 1 : 0
-  name     = var.rg_name_shd[count.index]
+  name     = var.rg_name_shd
   location = var.location
   tags     = var.tags
 }
@@ -281,7 +281,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
   count                 = var.fslogix == true ? 1 : 0
   name                  = "azfilelink-${var.business_unit}"
   resource_group_name   = var.vnet_rg
-  private_dns_zone_name = azurerm_private_dns_zone.dnszone_st.name[count.index]
+  private_dns_zone_name = azurerm_private_dns_zone.dnszone_st[count.index].name
   virtual_network_id    = var.vnet_id
 
   lifecycle { ignore_changes = [tags] }
