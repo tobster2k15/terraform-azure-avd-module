@@ -292,3 +292,9 @@ variable "subnet_id_prd" {
   description = "The ID of the subnet."
   default     = null
 }
+
+variable "resource_group_name"{
+  type        = string
+  description = "The name of the resource group."
+  default     = null
+}
