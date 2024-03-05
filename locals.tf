@@ -79,8 +79,8 @@ rbac_name           =   "id-RBAC-${var.usecase}-prd"
 img_gal_name        =   "gal_${var.usecase}_shd"
 img_version         =   "it-${var.usecase}-shd-001"
 
-# current_timestamp   =   timestamp()
-# current_day         =   formatdate("YYYY-MM-DD", local.current_timestamp)
+current_timestamp   =   timestamp()
+current_day         =   formatdate("YYYY-MM-DD", local.current_timestamp)
 
 #Standard Tags, die per Azure Policy geforced werden und vererbt werden
 }

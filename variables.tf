@@ -257,7 +257,7 @@ variable "st_account_tier"{
   default     = "Premium"
 }
 
-variable "st_account_replication"{ 
+variable "st_replication"{ 
   type        = string
   description = "The replication of the storage account."
   default     = "LRS"
@@ -270,6 +270,12 @@ variable "business_unit" {
 }
 
 variable "usecase" {
+  type        = string
+  description = "The usecase of the pool."
+  default     = "vdi"
+}
+
+variable "usecase_for_vm" {
   type        = string
   description = "The usecase of the pool."
   default     = "vdi"
