@@ -312,19 +312,19 @@ variable "rg_name_shd" {
 }
 
 variable "st_access" {
-  type        = map(string)
+  type        = set(string)
   description = "The access tier of the storage account."
   default     = ["group1", "group2"]
 }
 
 variable "avd_access_prd" {
-  type        = map(string)
+  type        = set(string)
   description = "The access tier of the productive AVD."
   default     = ["group1", "group2"]
 }
 
 variable "avd_access_dev" {
-  type        = map(string)
+  type        = set(string)
   description = "The access tier of the productive AVD."
   default     = ["group1", "group2"]
 }
