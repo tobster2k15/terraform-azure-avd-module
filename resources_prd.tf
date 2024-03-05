@@ -52,7 +52,7 @@ resource "azurerm_virtual_desktop_workspace" "workspace" {
   friendly_name       = "Virtual ${var.pool_type != "Application" ? "Applications" : "Desktop"} Workspace"
   description         = "The ${local.prefix}-WS was created with Terraform."
   resource_group_name = var.resource_group_name
-  location            = var.location
+  location            = azurerm_resource_group.rg_name.location
   tags                = var.tags
   lifecycle {
     ignore_changes = [
@@ -63,7 +63,7 @@ resource "azurerm_virtual_desktop_workspace" "workspace" {
 # The application group. In this module it is limited to a single AAD group. You can use outputs to add additional groups from the root module.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_application_group
 resource "azurerm_virtual_desktop_application_group" "app_group" {
-  for_each            = toset(local.aad_group_list)
+  for_each            = var.avd_access_prd
   name                = "${local.prefix}-AG${format("%03d", "${index(local.aad_group_list, each.value) + 1}")}"
   friendly_name       = "${each.value} application group"
   description         = "${each.value} application group - created with Terraform."
@@ -76,7 +76,7 @@ resource "azurerm_virtual_desktop_application_group" "app_group" {
 # The association object ties the application group(s) to the workspace.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace_application_group_association
 resource "azurerm_virtual_desktop_workspace_application_group_association" "association" {
-  for_each             = toset(local.aad_group_list)
+  for_each             = var.avd_access_prd
   application_group_id = azurerm_virtual_desktop_application_group.app_group[each.value].id
   workspace_id         = azurerm_virtual_desktop_workspace.workspace.id
 }
