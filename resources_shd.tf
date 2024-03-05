@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "myrg_shd" {
-  name     = var.fslogix == true || var.sql_enabled == true ? "rg-test-shd-001" : "test"
+  name     = var.fslogix == true || var.sql_enabled == true ? "rg-test-shd-001" : null
   location = var.location
   tags     = var.tags
 }
