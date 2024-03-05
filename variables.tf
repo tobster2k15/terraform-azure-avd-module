@@ -310,3 +310,9 @@ variable "rg_name_shd" {
   description = "The name of the storage share."
   default     = "rg-test-001"
 }
+
+variable "st_access" {
+  type        = list(string)
+  description = "The access tier of the storage account."
+  default     = ["group1", "group2"]
+}
