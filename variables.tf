@@ -280,3 +280,9 @@ variable "usecase_for_vm" {
   description = "The usecase of the pool."
   default     = "vdi"
 }
+
+variable "subnet_id" {
+  type        = string
+  description = "The ID of the subnet."
+  default     = null
+}

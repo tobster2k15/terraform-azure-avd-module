@@ -110,7 +110,7 @@ resource "azurerm_private_endpoint" "endpoint_sql" {
   name                = var.sql_enabled == true ? "${local.pep_name}-sql" : null
   location            = azurerm_resource_group.myrg_shd.location
   resource_group_name = var.vnet_rg
-  subnet_id           = lookup(module.vnet.vnet_subnets_name_id, "${local.snet_name_shd}", null)
+  subnet_id           = var.subnet_id
   tags                = var.tags
 
   private_service_connection {
@@ -246,7 +246,7 @@ resource "azurerm_private_endpoint" "endpoint_st" {
   name                = var.fslogix == true ? local.pep_name : null
   location            = azurerm_resource_group.myrg_shd.location
   resource_group_name = azurerm_resource_group.myrg_shd.name
-  subnet_id           = lookup(module.vnet.vnet_subnets_name_id, "${local.snet_name_shd}", null)
+  subnet_id           = var.subnet_id
   tags                = var.tags
 
   private_service_connection {
