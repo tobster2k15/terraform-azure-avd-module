@@ -270,7 +270,8 @@ resource "azurerm_private_endpoint" "endpoint_st" {
 
 # Deny Traffic from Public Networks with white list exceptions
 resource "azurerm_storage_account_network_rules" "stfw" {
-  storage_account_id              = azurerm_storage_account.storage[*].id
+  count                           = var.fslogix == true ? 1 : 0
+  storage_account_id              = azurerm_storage_account.storage[count.index].id
   default_action                  = "Deny"
   bypass                          = ["AzureServices", "Metrics", "Logging"]
   depends_on                      = [azurerm_storage_share.FSShare,
