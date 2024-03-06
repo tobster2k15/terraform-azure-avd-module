@@ -13,7 +13,7 @@ data "azurerm_role_definition" "storage_role" {
 }
 
 data "azuread_group" "st_group" {
-  for_each         = var.st_access
+  for_each         = toset(var.st_access)
   display_name     = each.value
   security_enabled = true
 }

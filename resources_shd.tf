@@ -221,8 +221,15 @@ resource "azurerm_role_assignment" "af_role" {
   count              = var.fslogix_enabled == true ? 1 : 0
   scope              = azurerm_storage_account.storage[count.index].id
   role_definition_id = data.azurerm_role_definition.storage_role.id
-  principal_id       = data.azuread_group.st_group.id
+  principal_id       = data.azuread_group.st_group[each.value].id
 }
+
+# resource "azurerm_role_assignment" "rbac" {
+#   for_each           = toset(local.aad_group_list)
+#   scope              = azurerm_virtual_desktop_application_group.app_group[each.value].id
+#   role_definition_id = data.azurerm_role_definition.avduser_role.id
+#   principal_id       = data.azuread_group.avd_group_prd[each.value].id
+# }
 
 #Get Private DNS Zone for the Storage Private Endpoints
 resource "azurerm_private_dns_zone" "dnszone_st" {
