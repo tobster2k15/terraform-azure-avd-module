@@ -313,7 +313,6 @@ variable "rg_name_shd" {
 
 variable "st_access" {
   type = map(object({
-    fslogix_enabled = bool
     st_access       = set(string)
   }))
   description = "The access tier of the storage account."
