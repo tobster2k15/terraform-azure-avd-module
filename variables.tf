@@ -311,17 +311,17 @@ variable "rg_name_shd" {
   default     = "rg-test-001"
 }
 
-# variable "st_access_prd" {
-#   type = string
-#   description = "The access tier of the storage account."
-#   default     = null
-# }
+variable "st_access_prd" {
+  type = string
+  description = "The access tier of the storage account."
+  default     = null
+}
 
-# variable "st_access_dev" {
-#   type = string
-#   description = "The access tier of the storage account."
-#   default     = null
-# }
+variable "st_access_dev" {
+  type = string
+  description = "The access tier of the storage account."
+  default     = null
+}
 
 variable "st_access" {
   type        = set(string)

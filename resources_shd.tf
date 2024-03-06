@@ -221,8 +221,16 @@ resource "azurerm_role_assignment" "af_role" {
   count              = var.fslogix_enabled == true ? 1 : 0
   scope              = azurerm_storage_account.storage[count.index].id
   role_definition_id = data.azurerm_role_definition.storage_role.id
-  principal_id       = data.azuread_group.st_group[each.value].id
+  principal_id       = var.st_access_prd
 }
+
+resource "azurerm_role_assignment" "af_role" {
+  count              = var.fslogix_enabled == true ? 1 : 0
+  scope              = azurerm_storage_account.storage[count.index].id
+  role_definition_id = data.azurerm_role_definition.storage_role.id
+  principal_id       = var.st_access_dev
+}
+
 
 # resource "azurerm_role_assignment" "rbac" {
 #   for_each           = toset(local.aad_group_list)
