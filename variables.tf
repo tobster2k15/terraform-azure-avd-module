@@ -312,9 +312,12 @@ variable "rg_name_shd" {
 }
 
 variable "st_access" {
-  type        = set(string)
+  type = map(object({
+    fslogix_enabled = bool
+    st_access       = set(string)
+  }))
   description = "The access tier of the storage account."
-  default     = ["group1", "group2"]
+  default     = null
 }
 
 variable "avd_access_prd" {

@@ -218,9 +218,8 @@ resource "azurerm_storage_share" "FSShare" {
 }
 
 resource "azurerm_role_assignment" "af_role" {
-  count              = var.fslogix_enabled == true ? 1 : 0
-  for_each           = toset(local.st_access)
-  scope              = azurerm_storage_account.storage[count.index].id
+  for_each           = { for k, v in var.st_access : k => v if var.fslogix_enabled }
+  scope              = azurerm_storage_account.storage.id
   role_definition_id = data.azurerm_role_definition.storage_role.id
   principal_id       = each.key
 }
