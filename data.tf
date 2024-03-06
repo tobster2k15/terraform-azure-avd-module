@@ -12,8 +12,8 @@ data "azurerm_role_definition" "storage_role" {
   name    = "Storage File Data SMB Share Contributor"
 }
 
-data "azuread_group" "st_group" {
-  for_each         = toset(var.st_access)
-  display_name     = each.value
-  security_enabled = true
-}
+# data "azuread_group" "st_group" {
+#   for_each         = toset(var.st_access)
+#   display_name     = each.value
+#   security_enabled = true
+# }

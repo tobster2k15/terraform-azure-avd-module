@@ -323,11 +323,11 @@ variable "st_access_dev" {
   default     = null
 }
 
-variable "st_access" {
-  type        = set(string)
-  description = "The access tier of the storage account."
-  default     = ["group1", "group2"]
-}
+# variable "st_access" {
+#   type        = set(string)
+#   description = "The access tier of the storage account."
+#   default     = ["group1", "group2"]
+# }
 
 variable "avd_access_prd" {
   type        = set(string)
