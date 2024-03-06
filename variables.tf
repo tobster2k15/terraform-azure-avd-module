@@ -215,7 +215,7 @@ variable "start_on_connect"{
   default     = false
 }
 
-variable "fslogix"{
+variable "fslogix_enabled"{
   type        = bool
   description = "Enable FSLogix for the pool."
   default     = false

@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "myrg_shd" {
-  count    = var.fslogix == true ? 1 : 0
+  count    = var.fslogix_enabled == true || var.sql_enabled == true ? 1 : 0
   name     = var.rg_name_shd
   location = var.location
   tags     = var.tags
@@ -176,7 +176,7 @@ resource "azurerm_resource_group" "myrg_shd" {
 ############################################################################################################
 
 resource "azurerm_user_assigned_identity" "mi" {
-  count               = var.fslogix == true ? 1 : 0
+  count               = var.fslogix_enabled == true ? 1 : 0
   name                = "id-avd-fslogix-we-${var.business_unit}"
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
   location            = azurerm_resource_group.myrg_shd[count.index].location
@@ -186,7 +186,7 @@ resource "azurerm_user_assigned_identity" "mi" {
 ## https://docs.microsoft.com/azure/storage/common/storage-account-overview
 ## Create a File Storage Account 
 resource "azurerm_storage_account" "storage" {
-  count                             = var.fslogix == true ? 1 : 0
+  count                             = var.fslogix_enabled == true ? 1 : 0
   name                              = var.st_name
   resource_group_name               = azurerm_resource_group.myrg_shd[count.index].name
   location                          = azurerm_resource_group.myrg_shd[count.index].location
@@ -206,7 +206,7 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_storage_share" "FSShare" {
-  count            = var.fslogix == true ? 1 : 0
+  count            = var.fslogix_enabled == true ? 1 : 0
   name             = "fslogix"
   quota            = "100"
   enabled_protocol = "SMB"
@@ -226,14 +226,14 @@ resource "azurerm_role_assignment" "af_role" {
 
 #Get Private DNS Zone for the Storage Private Endpoints
 resource "azurerm_private_dns_zone" "dnszone_st" {
-  count               = var.fslogix == true ? 1 : 0
+  count               = var.fslogix_enabled == true ? 1 : 0
   name                = "privatelink.file.core.windows.net"
   resource_group_name = var.vnet_rg
   tags                = var.tags
 }
 
 resource "azurerm_private_dns_a_record" "dnszone_st" {
-  count               = var.fslogix == true ? 1 : 0
+  count               = var.fslogix_enabled == true ? 1 : 0
   name                = "${var.st_name}.file.core.windows.net"
   zone_name           = azurerm_private_dns_zone.dnszone_st[count.index].name
   resource_group_name = var.vnet_rg
@@ -243,7 +243,7 @@ resource "azurerm_private_dns_a_record" "dnszone_st" {
 }
 
 resource "azurerm_private_endpoint" "endpoint_st" {
-  count               = var.fslogix == true ? 1 : 0
+  count               = var.fslogix_enabled == true ? 1 : 0
   name                = local.pep_name
   location            = azurerm_resource_group.myrg_shd[count.index].location
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
@@ -264,7 +264,7 @@ resource "azurerm_private_endpoint" "endpoint_st" {
 
 # Deny Traffic from Public Networks with white list exceptions
 resource "azurerm_storage_account_network_rules" "stfw" {
-  count                           = var.fslogix == true ? 1 : 0
+  count                           = var.fslogix_enabled == true ? 1 : 0
   storage_account_id              = azurerm_storage_account.storage[count.index].id
   default_action                  = "Deny"
   bypass                          = ["AzureServices", "Metrics", "Logging"]
@@ -274,7 +274,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
-  count                 = var.fslogix == true ? 1 : 0
+  count                 = var.fslogix_enabled == true ? 1 : 0
   name                  = "azfilelink-${var.business_unit}"
   resource_group_name   = var.vnet_rg
   private_dns_zone_name = azurerm_private_dns_zone.dnszone_st[count.index].name
