@@ -311,12 +311,22 @@ variable "rg_name_shd" {
   default     = "rg-test-001"
 }
 
+# variable "st_access_prd" {
+#   type = string
+#   description = "The access tier of the storage account."
+#   default     = null
+# }
+
+# variable "st_access_dev" {
+#   type = string
+#   description = "The access tier of the storage account."
+#   default     = null
+# }
+
 variable "st_access" {
-  type = map(object({
-    st_access       = set(string)
-  }))
+  type        = set(string)
   description = "The access tier of the storage account."
-  default     = null
+  default     = ["group1", "group2"]
 }
 
 variable "avd_access_prd" {

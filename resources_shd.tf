@@ -218,10 +218,10 @@ resource "azurerm_storage_share" "FSShare" {
 }
 
 resource "azurerm_role_assignment" "af_role" {
-  for_each           = { for k, v in var.st_access : k => v if var.fslogix_enabled }
-  scope              = azurerm_storage_account.storage.id
+  count              = var.fslogix_enabled == true ? 1 : 0
+  scope              = azurerm_storage_account.storage[count.index].id
   role_definition_id = data.azurerm_role_definition.storage_role.id
-  principal_id       = each.key
+  principal_id       = var.st_access
 }
 
 #Get Private DNS Zone for the Storage Private Endpoints
