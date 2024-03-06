@@ -225,7 +225,7 @@ resource "azurerm_role_assignment" "af_role_prd" {
 }
 
 resource "azurerm_role_assignment" "af_role_dev" {
-  count              = var.fslogix_enabled == true && var.st_access_dev =! null ? 1 : 0
+  count              = var.fslogix_enabled == true && var.st_access_dev != null ? 1 : 0
   scope              = azurerm_storage_account.storage[count.index].id
   role_definition_id = data.azurerm_role_definition.storage_role.id
   principal_id       = var.st_access_dev 
