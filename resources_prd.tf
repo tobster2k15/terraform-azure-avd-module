@@ -86,7 +86,7 @@ resource "azurerm_role_assignment" "rbac" {
   for_each           = toset(local.aad_group_list)
   scope              = azurerm_virtual_desktop_application_group.app_group[each.value].id
   role_definition_id = data.azurerm_role_definition.avduser_role.id
-  principal_id       = data.azuread_group.aad_group[each.value].id
+  principal_id       = data.azuread_group.avd_group_prd[each.value].id
 }
 # Applications for RAIL pools.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_application
