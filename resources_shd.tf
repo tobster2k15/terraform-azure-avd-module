@@ -217,14 +217,14 @@ resource "azurerm_storage_share" "FSShare" {
   lifecycle { ignore_changes = [name, quota, enabled_protocol] }
 }
 
-resource "azurerm_role_assignment" "af_role" {
+resource "azurerm_role_assignment" "af_role_prd" {
   count              = var.fslogix_enabled == true ? 1 : 0
   scope              = azurerm_storage_account.storage[count.index].id
   role_definition_id = data.azurerm_role_definition.storage_role.id
   principal_id       = var.st_access_prd
 }
 
-resource "azurerm_role_assignment" "af_role" {
+resource "azurerm_role_assignment" "af_role_dev" {
   count              = var.fslogix_enabled == true ? 1 : 0
   scope              = azurerm_storage_account.storage[count.index].id
   role_definition_id = data.azurerm_role_definition.storage_role.id
