@@ -219,7 +219,7 @@ resource "azurerm_storage_share" "FSShare" {
 
 resource "azurerm_role_assignment" "af_role" {
   for_each           = toset(local.st_access)
-  scope              = azurerm_storage_account.storage.id
+  scope              = azurerm_storage_account.storage[count.index].id
   role_definition_id = data.azurerm_role_definition.storage_role.id
   principal_id       = each.key
 }
