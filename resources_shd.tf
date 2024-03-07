@@ -124,7 +124,7 @@ resource "azurerm_private_endpoint" "endpoint_sql" {
   name                = "${local.pep_name}-sql"
   location            = azurerm_resource_group.myrg_shd[count.index].location
   resource_group_name = var.vnet_rg
-  subnet_id           = var.subnet_id
+  subnet_id           = var.subnet_id_shd
   tags                = var.tags
 
   private_service_connection {
@@ -264,7 +264,7 @@ resource "azurerm_private_endpoint" "endpoint_st" {
   name                = local.pep_name
   location            = azurerm_resource_group.myrg_shd[count.index].location
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
-  subnet_id           = var.subnet_id
+  subnet_id           = var.subnet_id_shd
   tags                = var.tags
 
   private_service_connection {
