@@ -346,3 +346,21 @@ variable "image_builder_enabled" {
   description = "Enable the image builder."
   default     = false
 }
+
+variable "publisher" {
+  type        = string
+  description = "The publisher of the image."
+  default     = "microsoftwindowsdesktop"
+}
+
+variable "offer" {
+  type        = string
+  description = "The offer of the image."
+  default     = "windows-11"
+}
+
+variable "sku" {
+  type        = string
+  description = "The sku of the image."
+  default     = "win11-23h2-avd"
+}
