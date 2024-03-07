@@ -113,7 +113,7 @@ resource "azurerm_private_dns_zone" "mydnszone_sql" {
 resource "azurerm_private_dns_zone_virtual_network_link" "mylink_sql" {
   count                 = var.sql_enabled == true ? 1 : 0 
   name                  = "azsqllink-${var.business_unit}"
-  private_dns_zone_name = azurerm_private_dns_zone.mydnszone_sql.name
+  private_dns_zone_name = azurerm_private_dns_zone.mydnszone_sql[count.index].name
   virtual_network_id    = var.vnet_id
   resource_group_name   = azurerm_resource_group.myrg_shd[count.index].name
   tags                  = var.tags
