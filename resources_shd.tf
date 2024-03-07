@@ -145,7 +145,7 @@ resource "azurerm_private_dns_a_record" "dnszone_sql" {
   zone_name           = azurerm_private_dns_zone.mydnszone_sql[count.index].name
   resource_group_name = var.vnet_rg
   ttl                 = 300
-  records             = [azurerm_private_endpoint.endpoint_sql.private_service_connection[count.index].0.private_ip_address]
+  records             = [azurerm_private_endpoint.endpoint_sql[count.index].private_service_connection.0.private_ip_address]
   tags                = var.tags
 }
 
