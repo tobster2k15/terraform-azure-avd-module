@@ -12,8 +12,8 @@ resource "azurerm_resource_group" "myrg_shd" {
  resource "azurerm_user_assigned_identity" "aib" {
   count               = var.img_builder_enabled == true ? 1 : 0
   name                = local.managed_id_name
-  resource_group_name = azurerm_resource_group.myrg_shd.name
-  location            = azurerm_resource_group.myrg_shd.location
+  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
+  location            = azurerm_resource_group.myrg_shd[count.index].location
   tags                = var.tags
 }
 
@@ -62,9 +62,9 @@ resource "azurerm_role_definition" "aib" {
 
 resource "azurerm_role_assignment" "aib" {
   count              = var.img_builder_enabled == true ? 1 : 0   
-  scope              = azurerm_resource_group.myrg_shd.id
-  role_definition_id = azurerm_role_definition.aib.role_definition_resource_id
-  principal_id       = azurerm_user_assigned_identity.aib.principal_id
+  scope              = azurerm_resource_group.myrg_shd[count.index].id
+  role_definition_id = azurerm_role_definition.aib[count.index].role_definition_resource_id
+  principal_id       = azurerm_user_assigned_identity.aib[count.index].principal_id
 }
 
 resource "time_sleep" "aib" {
@@ -76,17 +76,17 @@ resource "time_sleep" "aib" {
 resource "azurerm_shared_image_gallery" "aib" {
   count               = var.img_builder_enabled == true ? 1 : 0   
   name                = local.img_gal_name
-  resource_group_name = azurerm_resource_group.myrg_shd.name
-  location            = azurerm_resource_group.myrg_shd.location
+  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
+  location            = azurerm_resource_group.myrg_shd[count.index].location
   tags                = var.tags
 }
 
 resource "azurerm_shared_image" "aib" {
   count               = var.img_builder_enabled == true ? 1 : 0
   name                = local.img_version
-  gallery_name        = azurerm_shared_image_gallery.aib.name
-  resource_group_name = azurerm_resource_group.myrg_shd.name
-  location            = azurerm_resource_group.myrg_shd.location
+  gallery_name        = azurerm_shared_image_gallery.aib[count.index].name
+  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
+  location            = azurerm_resource_group.myrg_shd[count.index].location
   os_type             = "Windows"
   hyper_v_generation  = "V2"
   tags                = var.tags
