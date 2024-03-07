@@ -1,92 +1,102 @@
 resource "azurerm_resource_group" "myrg_shd" {
-  count    = var.fslogix_enabled == true || var.sql_enabled == true ? 1 : 0
+  count    = var.fslogix_enabled == true || var.sql_enabled == true || var.img_builder_enabled == true ? 1 : 0
   name     = var.rg_name_shd
   location = var.location
   tags     = var.tags
 }
 
-# resource "azurerm_user_assigned_identity" "aib" {
-#   name                = local.managed_id_name
-#   resource_group_name = azurerm_resource_group.myrg_shd.name
-#   location            = azurerm_resource_group.myrg_shd.location
-#   tags                = var.tags
-# }
+############################################################################################################
+##########################################  Image Builder ##################################################
+############################################################################################################
 
-# resource "azurerm_role_definition" "aib" {
-#   name        = local.rbac_name
-#   scope       = data.azurerm_subscription.current.id
-#   description = "Azure Image Builder AVD"
+ resource "azurerm_user_assigned_identity" "aib" {
+  count               = var.img_builder_enabled == true ? 1 : 0
+  name                = local.managed_id_name
+  resource_group_name = azurerm_resource_group.myrg_shd.name
+  location            = azurerm_resource_group.myrg_shd.location
+  tags                = var.tags
+}
 
-#   permissions {
-#     actions = [
-#       "Microsoft.Authorization/*/read",
-#       "Microsoft.Compute/images/write",
-#       "Microsoft.Compute/images/read",
-#       "Microsoft.Compute/images/delete",
-#       "Microsoft.Compute/galleries/read",
-#       "Microsoft.Compute/galleries/images/read",
-#       "Microsoft.Compute/galleries/images/versions/read",
-#       "Microsoft.Compute/galleries/images/versions/write",
-#       "Microsoft.Storage/storageAccounts/blobServices/containers/read",
-#       "Microsoft.Storage/storageAccounts/blobServices/containers/write",
-#       "Microsoft.Storage/storageAccounts/blobServices/read",
-#       "Microsoft.ContainerInstance/containerGroups/read",
-#       "Microsoft.ContainerInstance/containerGroups/write",
-#       "Microsoft.ContainerInstance/containerGroups/start/action",
-#       "Microsoft.ManagedIdentity/userAssignedIdentities/*/read",
-#       "Microsoft.ManagedIdentity/userAssignedIdentities/*/assign/action",
-#       "Microsoft.Authorization/*/read",
-#       "Microsoft.Resources/deployments/*",
-#       "Microsoft.Resources/deploymentScripts/read",
-#       "Microsoft.Resources/deploymentScripts/write",
-#       "Microsoft.Resources/subscriptions/resourceGroups/read",
-#       "Microsoft.VirtualMachineImages/imageTemplates/run/action",
-#       "Microsoft.VirtualMachineImages/imageTemplates/read",
-#       "Microsoft.Network/virtualNetworks/read",
-#       "Microsoft.Network/virtualNetworks/subnets/join/action"
-#     ]
-#     not_actions = []
-#   }
+resource "azurerm_role_definition" "aib" {
+  count       = var.img_builder_enabled == true ? 1 : 0   
+  name        = local.rbac_name
+  scope       = data.azurerm_subscription.current.id
+  description = "Azure Image Builder AVD"
 
-#   assignable_scopes = [
-#     data.azurerm_subscription.current.id,
-#     azurerm_resource_group.myrg_shd.id
-#   ]
-# }
+  permissions {
+    actions = [
+      "Microsoft.Authorization/*/read",
+      "Microsoft.Compute/images/write",
+      "Microsoft.Compute/images/read",
+      "Microsoft.Compute/images/delete",
+      "Microsoft.Compute/galleries/read",
+      "Microsoft.Compute/galleries/images/read",
+      "Microsoft.Compute/galleries/images/versions/read",
+      "Microsoft.Compute/galleries/images/versions/write",
+      "Microsoft.Storage/storageAccounts/blobServices/containers/read",
+      "Microsoft.Storage/storageAccounts/blobServices/containers/write",
+      "Microsoft.Storage/storageAccounts/blobServices/read",
+      "Microsoft.ContainerInstance/containerGroups/read",
+      "Microsoft.ContainerInstance/containerGroups/write",
+      "Microsoft.ContainerInstance/containerGroups/start/action",
+      "Microsoft.ManagedIdentity/userAssignedIdentities/*/read",
+      "Microsoft.ManagedIdentity/userAssignedIdentities/*/assign/action",
+      "Microsoft.Authorization/*/read",
+      "Microsoft.Resources/deployments/*",
+      "Microsoft.Resources/deploymentScripts/read",
+      "Microsoft.Resources/deploymentScripts/write",
+      "Microsoft.Resources/subscriptions/resourceGroups/read",
+      "Microsoft.VirtualMachineImages/imageTemplates/run/action",
+      "Microsoft.VirtualMachineImages/imageTemplates/read",
+      "Microsoft.Network/virtualNetworks/read",
+      "Microsoft.Network/virtualNetworks/subnets/join/action"
+    ]
+    not_actions = []
+  }
 
-# resource "azurerm_role_assignment" "aib" {
-#   scope              = azurerm_resource_group.myrg_shd.id
-#   role_definition_id = azurerm_role_definition.aib.role_definition_resource_id
-#   principal_id       = azurerm_user_assigned_identity.aib.principal_id
-# }
+  assignable_scopes = [
+    data.azurerm_subscription.current.id,
+    azurerm_resource_group.myrg_shd.id
+  ]
+}
 
-# resource "time_sleep" "aib" {
-#   depends_on      = [azurerm_role_assignment.aib]
-#   create_duration = "60s"
-# }
+resource "azurerm_role_assignment" "aib" {
+  count              = var.img_builder_enabled == true ? 1 : 0   
+  scope              = azurerm_resource_group.myrg_shd.id
+  role_definition_id = azurerm_role_definition.aib.role_definition_resource_id
+  principal_id       = azurerm_user_assigned_identity.aib.principal_id
+}
 
-# resource "azurerm_shared_image_gallery" "aib" {
-#   name                = local.img_gal_name
-#   resource_group_name = azurerm_resource_group.myrg_shd.name
-#   location            = azurerm_resource_group.myrg_shd.location
-#   tags                = var.tags
-# }
+resource "time_sleep" "aib" {
+  count           = var.img_builder_enabled == true ? 1 : 0   
+  depends_on      = [azurerm_role_assignment.aib]
+  create_duration = "60s"
+}
 
-# resource "azurerm_shared_image" "aib" {
-#   name                = local.img_version =! null ? var.img_version : null
-#   gallery_name        = azurerm_shared_image_gallery.aib.name
-#   resource_group_name = azurerm_resource_group.myrg_shd.name
-#   location            = azurerm_resource_group.myrg_shd.location
-#   os_type             = "Windows"
-#   hyper_v_generation  = "V2"
-#   tags                = var.tags
+resource "azurerm_shared_image_gallery" "aib" {
+  count               = var.img_builder_enabled == true ? 1 : 0   
+  name                = local.img_gal_name
+  resource_group_name = azurerm_resource_group.myrg_shd.name
+  location            = azurerm_resource_group.myrg_shd.location
+  tags                = var.tags
+}
 
-#   identifier {
-#     publisher = var.publisher
-#     offer     = var.offer
-#     sku       = var.sku
-#   }
-# }
+resource "azurerm_shared_image" "aib" {
+  count               = var.img_builder_enabled == true ? 1 : 0
+  name                = local.img_version
+  gallery_name        = azurerm_shared_image_gallery.aib.name
+  resource_group_name = azurerm_resource_group.myrg_shd.name
+  location            = azurerm_resource_group.myrg_shd.location
+  os_type             = "Windows"
+  hyper_v_generation  = "V2"
+  tags                = var.tags
+
+  identifier {
+    publisher = var.publisher
+    offer     = var.offer
+    sku       = var.sku
+  }
+}
 
 ############################################################################################################
 ############################################### SQL DB #####################################################
@@ -175,13 +185,6 @@ resource "azurerm_resource_group" "myrg_shd" {
 ########################################  Storage Account ##################################################
 ############################################################################################################
 
-resource "azurerm_user_assigned_identity" "mi" {
-  count               = var.fslogix_enabled == true ? 1 : 0
-  name                = "id-avd-fslogix-we-${var.business_unit}"
-  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
-  location            = azurerm_resource_group.myrg_shd[count.index].location
-}
-
 ## Azure Storage Accounts requires a globally unique names
 ## https://docs.microsoft.com/azure/storage/common/storage-account-overview
 ## Create a File Storage Account 
@@ -214,11 +217,13 @@ resource "azurerm_storage_share" "FSShare" {
 
   storage_account_name = azurerm_storage_account.storage[count.index].name
   depends_on           = [azurerm_storage_account.storage]
-  lifecycle { ignore_changes = [name, quota, enabled_protocol] }
+  lifecycle { 
+    ignore_changes = [name, quota, enabled_protocol] 
+    }
 }
 
 resource "azurerm_role_assignment" "af_role_prd" {
-  count              = var.fslogix_enabled == true ? 1 : 0
+  count              = var.fslogix_enabled == true && var.st_access_prd != null ? 1 : 0
   scope              = azurerm_storage_account.storage[count.index].id
   role_definition_id = data.azurerm_role_definition.storage_role.id
   principal_id       = var.st_access_prd
@@ -230,14 +235,6 @@ resource "azurerm_role_assignment" "af_role_dev" {
   role_definition_id = data.azurerm_role_definition.storage_role.id
   principal_id       = var.st_access_dev 
 }
-
-
-# resource "azurerm_role_assignment" "rbac" {
-#   for_each           = toset(local.aad_group_list)
-#   scope              = azurerm_virtual_desktop_application_group.app_group[each.value].id
-#   role_definition_id = data.azurerm_role_definition.avduser_role.id
-#   principal_id       = data.azuread_group.avd_group_prd[each.value].id
-# }
 
 #Get Private DNS Zone for the Storage Private Endpoints
 resource "azurerm_private_dns_zone" "dnszone_st" {

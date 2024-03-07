@@ -16,18 +16,13 @@ resource "azurerm_virtual_desktop_host_pool" "pool" {
   type                             = var.pool_type == "Desktop" ? "Personal" : "Pooled"
   maximum_sessions_allowed         = var.pool_type == "Desktop" ? null : var.maximum_sessions_allowed
   personal_desktop_assignment_type = var.pool_type == "Desktop" ? var.desktop_assignment_type : null
-  start_vm_on_connect              = var.start_on_connect != true ? true : false
-  load_balancer_type               = var.pool_type == "Desktop" ? "Persistent" : var.load_balancer_type
+  start_vm_on_connect              = var.start_on_connect
+  load_balancer_type               = var.load_balancer_type
   preferred_app_group_type         = var.pool_type != "Application" ? "Desktop" : "RailApplications"
   scheduled_agent_updates {
-    enabled  = var.enable_agent_update_schedule
-    timezone = var.timezone
+    enabled = true
     schedule {
       day_of_week = "Saturday"
-      hour_of_day = 2
-    }
-    schedule {
-      day_of_week = "Sunday"
       hour_of_day = 2
     }
   }
