@@ -56,7 +56,7 @@ resource "azurerm_role_definition" "aib" {
 
   assignable_scopes = [
     data.azurerm_subscription.current.id,
-    azurerm_resource_group.myrg_shd.id
+    azurerm_resource_group.myrg_shd[count.index].id
   ]
 }
 
