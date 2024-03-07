@@ -281,7 +281,7 @@ variable "usecase_for_vm" {
   default     = "vdi"
 }
 
-variable "subnet_id_prd" {
+variable "subnet_id_shd" {
   type        = string
   description = "The ID of the subnet."
   default     = null
