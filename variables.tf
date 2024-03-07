@@ -341,7 +341,7 @@ variable "avd_access_dev" {
   default     = null
 }
 
-variable "image_builder_enabled" {
+variable "img_builder_enabled" {
   type        = bool
   description = "Enable the image builder."
   default     = false
