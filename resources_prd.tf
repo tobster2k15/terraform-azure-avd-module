@@ -76,7 +76,7 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment
 resource "azurerm_role_assignment" "rbac" {
   for_each           = toset(var.avd_access_prd)
-  scope              = azurerm_virtual_desktop_application_group.applicationgroup[each.value].id
+  scope              = azurerm_virtual_desktop_application_group.applicationgroup.id
   role_definition_id = data.azurerm_role_definition.avduser_role.id
   principal_id       = data.azuread_group.avd_group_prd[each.value].id
 }
