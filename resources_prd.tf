@@ -75,7 +75,7 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
 # AAD group role and scope assignment.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment
 resource "azurerm_role_assignment" "rbac" {
-  for_each           = toset(local.aad_group_list)
+  for_each           = tolist(local.aad_group_list)
   scope              = azurerm_virtual_desktop_application_group.applicationgroup[each.value].id
   role_definition_id = data.azurerm_role_definition.avduser_role.id
   principal_id       = data.azuread_group.avd_group_prd[each.value].id
