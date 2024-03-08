@@ -47,6 +47,7 @@ osd_name            =   "osdisk${local.vm_name}"
 vdpool_name         =   "vdpool-${var.usecase}-prd-001"
 nic_name            =   "nic-${var.usecase}-prd-" #${var.instance} #Resource Group for 
 vds_name            =   "vdscaling-${var.usecase}-prd-001"
+app_group_name      =   "vdpool-${var.usecase}-DAG"
 #Network Naming
 rg_vnet_name        =   "rg-vnet-${var.usecase}-prd-${var.region}-001"
 vnet_name           =   "vnet-${var.usecase}-prd-${var.region}-001"
@@ -64,6 +65,7 @@ ipc_name_dev        =   "ipc-nic-dev-001"
 osd_name_dev        =   "osdisk${local.vm_name_dev}001"
 vdpool_name_dev     =   "vdpool-${var.usecase}-dev-001"
 nic_name_dev        =   "nic-${var.usecase}-dev-001"
+app_group_name_dev  =   "vdpool-${var.usecase}-dev-DAG"
 #SHD Naming
 workspace           =   "vdws-${var.usecase}-prd-001"
 workspace_dev       =   "vdws-${var.usecase}-dev-001"

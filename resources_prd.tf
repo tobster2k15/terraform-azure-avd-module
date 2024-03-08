@@ -60,7 +60,7 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
   name                = local.app_group_name
   location            = azurerm_resource_group.myrg.location
   resource_group_name = azurerm_resource_group.myrg.name
-  type                = var.app_group_type
+  type                = var.pool_type == "Application" ? "RemoteApp" : "Desktop"
   host_pool_id        = azurerm_virtual_desktop_host_pool.pool.id
   friendly_name       = "Produktivumgebung für ${var.usecase}"
   tags                = var.tags
