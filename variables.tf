@@ -10,10 +10,10 @@ variable "region" {
   description = "The desired Azure region for the pool. See also var.region_prefix_map."
   validation {
     condition = anytrue([
-      lower(var.region) == "northeurope",
-      lower(var.region) == "westeurope"
+      lower(var.region) == "ne",
+      lower(var.region) == "we"
     ])
-    error_message = "Please select one of the approved regions:northeurope or westeurope."
+    error_message = "Please select one of the approved regions:ne(northeurope) or we (westeurope)."
   }
 }
 variable "pool_type" {

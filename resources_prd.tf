@@ -1,24 +1,27 @@
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
 ### Resources
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
-
+resource "azurerm_resource_group" "myrg" {
+  name     = local.rg_name
+  location = var.location
+  tags     = var.tags
+}
 # The hostpool uses logic from var.pool_type to set the majority of the fields. 
 # Description and RDP properties are "changed" every deployment. Lifecycle block prevents this update. 
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_host_pool.html
 resource "azurerm_virtual_desktop_host_pool" "pool" {
-  resource_group_name              = var.resource_group_name
-  location                         = var.location
-  name                             = "${local.prefix}-HP"
-  friendly_name                    = "${local.prefix}-HP"
+  resource_group_name              = azurerm_resource_group.myrg.name
+  location                         = azurerm_resource_group.myrg.location
+  name                             = local.vdpool_name
+  friendly_name                    = "Production Hostpool"
   validate_environment             = var.validate_environment
   custom_rdp_properties            = var.custom_rdp_properties
-  description                      = "The ${local.prefix}-HP was created with Terraform."
+  description                      = "Hostpool für ${var.usecase}."
   type                             = var.pool_type == "Desktop" ? "Personal" : "Pooled"
-  maximum_sessions_allowed         = var.pool_type == "Desktop" ? null : var.maximum_sessions_allowed
+  maximum_sessions_allowed         = var.maximum_sessions_allowed
   personal_desktop_assignment_type = var.pool_type == "Desktop" ? var.desktop_assignment_type : null
   start_vm_on_connect              = var.start_on_connect
   load_balancer_type               = var.load_balancer_type
-  preferred_app_group_type         = var.pool_type != "Application" ? "Desktop" : "RailApplications"
   scheduled_agent_updates {
     enabled = true
     schedule {
@@ -43,43 +46,37 @@ resource "azurerm_virtual_desktop_host_pool_registration_info" "token" {
 # Functionally, workspaces have a 1-to-1 relationship with the hostpool. The friendly_name field is surfaced to the end user.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace
 resource "azurerm_virtual_desktop_workspace" "workspace" {
-  name                = "${local.prefix}-WS"
-  friendly_name       = "Virtual ${var.pool_type != "Application" ? "Applications" : "Desktop"} Workspace"
-  description         = "The ${local.prefix}-WS was created with Terraform."
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  tags                = var.tags
-  lifecycle {
-    ignore_changes = [
-      description
-    ]
-  }
+  name                = local.workspace
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+  friendly_name       = var.usecase
+  description         = "Workspace for ${var.usecase}"
+  tags                = local.common_tags
 }
+
 # The application group. In this module it is limited to a single AAD group. You can use outputs to add additional groups from the root module.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_application_group
-resource "azurerm_virtual_desktop_application_group" "app_group" {
-  for_each            = var.avd_access_prd
-  name                = "${local.prefix}-AG${format("%03d", "${index(local.aad_group_list, each.value) + 1}")}"
-  friendly_name       = "${each.value} application group"
-  description         = "${each.value} application group - created with Terraform."
-  resource_group_name = var.resource_group_name
-  host_pool_id        = azurerm_virtual_desktop_host_pool.pool.id
-  location            = var.location
-  type                = var.pool_type == "Application" ? "RemoteApp" : "Desktop"
-  tags                = var.tags
+resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
+  name                = local.app_group_name
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+  type                = var.app_group_type
+  host_pool_id        = azurerm_virtual_desktop_host_pool.hostpool.id
+  friendly_name       = "Produktivumgebung für ${var.usecase}"
+  tags                = local.common_tags
 }
-# The association object ties the application group(s) to the workspace.
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace_application_group_association
-resource "azurerm_virtual_desktop_workspace_application_group_association" "association" {
-  for_each             = var.avd_access_prd
-  application_group_id = azurerm_virtual_desktop_application_group.app_group[each.value].id
-  workspace_id         = azurerm_virtual_desktop_workspace.workspace.id
-}
+# # The association object ties the application group(s) to the workspace.
+# # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace_application_group_association
+# resource "azurerm_virtual_desktop_workspace_application_group_association" "association" {
+#   for_each             = var.avd_access_prd
+#   application_group_id = azurerm_virtual_desktop_application_group.app_group[each.value].id
+#   workspace_id         = azurerm_virtual_desktop_workspace.workspace.id
+# }
 # AAD group role and scope assignment.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment
 resource "azurerm_role_assignment" "rbac" {
   for_each           = toset(local.aad_group_list)
-  scope              = azurerm_virtual_desktop_application_group.app_group[each.value].id
+  scope              = azurerm_virtual_desktop_application_group.applicationgroup[each.value].id
   role_definition_id = data.azurerm_role_definition.avduser_role.id
   principal_id       = data.azuread_group.avd_group_prd[each.value].id
 }
@@ -90,7 +87,7 @@ resource "azurerm_virtual_desktop_application" "application" {
   name                         = replace(each.value["app_name"], " ", "")
   friendly_name                = each.value["app_name"]
   description                  = "${each.value["app_name"]} application - created with Terraform."
-  application_group_id         = azurerm_virtual_desktop_application_group.app_group[each.value["aad_group"]].id
+  application_group_id         = azurerm_virtual_desktop_application_group.applicationgroup.id
   path                         = each.value["local_path"]
   command_line_argument_policy = each.value["cmd_argument"] != null ? "DoNotAllow" : "Require"
   command_line_arguments       = each.value["cmd_argument"]
@@ -108,8 +105,8 @@ resource "azurerm_virtual_desktop_application" "application" {
 resource "azurerm_windows_virtual_machine" "vm" {
   count                 = var.vmcount
   name                  = "${local.prefix}-${format("%03d", count.index)}"
-  resource_group_name   = var.resource_group_name
-  location              = var.location
+  resource_group_name   = azurerm_resource_group.myrg.name
+  location              = azurerm_resource_group.myrg.location
   size                  = var.vmsize
   network_interface_ids = ["${azurerm_network_interface.nic.*.id[count.index]}"]
   provision_vm_agent    = true
