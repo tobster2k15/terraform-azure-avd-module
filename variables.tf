@@ -48,7 +48,7 @@ variable "application_map" {
     app_name     = string
     local_path   = string
     cmd_argument = string
-    avd_access_prd    = string
+    avd_access_prd    = list(string)
   }))
   description = "A map of all applications and metadata. Required if var.pool_type == application."
   default     = null
