@@ -1,15 +1,15 @@
-output "hp_output" {
-  description = "Hostpool information for consumption by an independent sessionhost module."
-  value = {
-    v = {
-      workspace_prefix = "${local.workspace_prefix}"
-      region_prefix    = "${local.region_prefix}"
-      pool_type_prefix = "${local.pool_type_prefix}"
-      pool_number      = "${format("%02d", var.pool_number)}"
-      pool_name        = "${azurerm_virtual_desktop_host_pool.pool.name}"
-    }
-  }
-}
+# output "hp_output" {
+#   description = "Hostpool information for consumption by an independent sessionhost module."
+#   value = {
+#     v = {
+#       workspace_prefix = "${local.workspace_prefix}"
+#       region_prefix    = "${local.region_prefix}"
+#       pool_type_prefix = "${local.pool_type_prefix}"
+#       pool_number      = "${format("%02d", var.pool_number)}"
+#       pool_name        = "${azurerm_virtual_desktop_host_pool.pool.name}"
+#     }
+#   }
+# }
 output "token" {
   description = "The hostpool token created for this pool."
   value       = local.token
