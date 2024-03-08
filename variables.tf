@@ -325,7 +325,7 @@ variable "st_access_dev" {
 }
 
 variable "avd_access_prd" {
-  type        = map(list(string))
+  type        = list(string)
   description = "The access tier of the productive AVD."
   default     = null
 }
