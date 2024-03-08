@@ -116,8 +116,8 @@ variable "region_prefix_map" {
   type        = map(any)
   description = "A list of prefix strings to concat in locals. Can be replaced or appended."
   default = {
-    westeurope       = "EUW"
-    northeurope      = "EUN"
+    westeurope       = "we"
+    northeurope      = "ne"
   }
 }
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
