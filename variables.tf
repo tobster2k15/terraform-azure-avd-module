@@ -4,6 +4,7 @@
 variable "rg" {
   type        = string
   description = "Name of the resource group."
+  default     = null 
 }
 variable "region" {
   type        = string
@@ -242,7 +243,7 @@ variable "vnet_id" {
 variable "location"{ 
   type        = string
   description = "The location of the virtual network."
-  nullable    = false
+  default     = "westeurope"
 }
 
 variable "st_account_kind"{ 
