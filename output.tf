@@ -25,7 +25,7 @@ output "workspace" {
 }
 output "applications" {
   description = "The application group(s) created by this module"
-  value       = azurerm_virtual_desktop_application_group.app_group[*]
+  value       = azurerm_virtual_desktop_application_group.applicationgroup[*]
 }
 output "rg" {
   description = "The resource group selected for this pool"

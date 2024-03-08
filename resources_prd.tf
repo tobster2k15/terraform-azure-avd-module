@@ -51,7 +51,7 @@ resource "azurerm_virtual_desktop_workspace" "workspace" {
   resource_group_name = azurerm_resource_group.myrg.name
   friendly_name       = var.usecase
   description         = "Workspace for ${var.usecase}"
-  tags                = local.common_tags
+  tags                = var.tags
 }
 
 # The application group. In this module it is limited to a single AAD group. You can use outputs to add additional groups from the root module.
@@ -61,9 +61,9 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
   location            = azurerm_resource_group.myrg.location
   resource_group_name = azurerm_resource_group.myrg.name
   type                = var.app_group_type
-  host_pool_id        = azurerm_virtual_desktop_host_pool.hostpool.id
+  host_pool_id        = azurerm_virtual_desktop_host_pool.pool.id
   friendly_name       = "Produktivumgebung für ${var.usecase}"
-  tags                = local.common_tags
+  tags                = var.tags
 }
 # # The association object ties the application group(s) to the workspace.
 # # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace_application_group_association

@@ -65,6 +65,8 @@ osd_name_dev        =   "osdisk${local.vm_name_dev}001"
 vdpool_name_dev     =   "vdpool-${var.usecase}-dev-001"
 nic_name_dev        =   "nic-${var.usecase}-dev-001"
 #SHD Naming
+workspace           =   "vdws-${var.usecase}-prd-001"
+workspace_dev       =   "vdws-${var.usecase}-dev-001"
 rg_name_shd         =   "rg-${var.usecase}-shd-001"
 st_name             =   "st${var.usecase}vdiprd001"
 st_share_name       =   "share${var.usecase}fslogix01"
