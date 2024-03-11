@@ -362,6 +362,6 @@ variable "app_type" {
       var.app_type == "Desktop" ||
       var.app_type == "RemoteApp"
     )
-    error_message = "Possible Inputs are Desktop."
+    error_message = "Possible Inputs are Desktop or RemoteApp."
   }
 }
