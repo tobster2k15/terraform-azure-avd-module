@@ -359,8 +359,8 @@ variable "app_type" {
   default     = "RemoteApp"
   validation {
     condition = (
-      var.app_type >= "Desktop" &&
-      var.app_type <= "RemoteApp"
+      var.app_type == "Desktop" ||
+      var.app_type == "RemoteApp"
     )
     error_message = "Possible Inputs are Desktop."
   }
