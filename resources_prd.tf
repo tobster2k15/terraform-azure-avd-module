@@ -17,13 +17,14 @@ resource "azurerm_virtual_desktop_host_pool" "pool" {
   validate_environment             = var.validate_environment
   custom_rdp_properties            = var.custom_rdp_properties
   description                      = "Hostpool für ${var.usecase}."
-  type                             = var.pool_type == "Desktop" ? "Pooled" : "Personal"
+  type                             = var.pool_type == "Pooled" ? "Desktop" : "Personal"
   maximum_sessions_allowed         = var.maximum_sessions_allowed
   personal_desktop_assignment_type = var.pool_type == "Desktop" ? var.desktop_assignment_type : null
   start_vm_on_connect              = var.start_on_connect
   load_balancer_type               = var.load_balancer_type
   scheduled_agent_updates {
-    enabled = true
+    timezone = var.timezone
+    enabled  = true
     schedule {
       day_of_week = "Saturday"
       hour_of_day = 2

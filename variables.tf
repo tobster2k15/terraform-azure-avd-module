@@ -206,7 +206,7 @@ variable "ou" {
 variable "start_on_connect"{
   type        = bool
   description = "Start the VM when a user connects."
-  default     = false
+  default     = true
 }
 
 variable "fslogix_enabled"{
@@ -351,4 +351,10 @@ variable "sku" {
   type        = string
   description = "The sku of the image."
   default     = "win11-23h2-avd"
+}
+
+variable "timezone" {
+  type        = string
+  description = "The timezone of the image."
+  default     = "UTC"
 }
