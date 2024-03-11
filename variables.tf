@@ -352,9 +352,3 @@ variable "sku" {
   description = "The sku of the image."
   default     = "win11-23h2-avd"
 }
-
-variable "timezone" {
-  type        = string
-  description = "The timezone of the image."
-  default     = "UTC"
-}
