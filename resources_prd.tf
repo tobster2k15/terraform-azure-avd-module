@@ -69,7 +69,7 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
 # # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace_application_group_association
 resource "azurerm_virtual_desktop_workspace_application_group_association" "association" {
   for_each             = toset(var.avd_access_prd)
-  application_group_id = azurerm_virtual_desktop_application_group.applicationgroup[each.value].id
+  application_group_id = azurerm_virtual_desktop_application_group.applicationgroup.id
   workspace_id         = azurerm_virtual_desktop_workspace.workspace.id
 }
 # AAD group role and scope assignment.
