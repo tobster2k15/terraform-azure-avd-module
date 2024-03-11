@@ -17,7 +17,7 @@ resource "azurerm_virtual_desktop_host_pool" "pool" {
   validate_environment             = var.validate_environment
   custom_rdp_properties            = var.custom_rdp_properties
   description                      = "Hostpool für ${var.usecase}."
-  type                             = var.pool_type =! "Personal" ? "Pooled" : null
+  type                             = var.pool_type != "Personal" ? "Pooled" : null
   maximum_sessions_allowed         = var.maximum_sessions_allowed
   personal_desktop_assignment_type = var.pool_type == "Desktop" ? var.desktop_assignment_type : null
   start_vm_on_connect              = var.start_on_connect
@@ -61,7 +61,7 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
   name                = local.app_group_name
   location            = azurerm_resource_group.myrg.location
   resource_group_name = azurerm_resource_group.myrg.name
-  type                = var.pool_type == "Application" ? "RemoteApp" : "Desktop"
+  type                = var.app_type == "RemoteApp" ? "Desktop" : null
   host_pool_id        = azurerm_virtual_desktop_host_pool.pool.id
   friendly_name       = "Produktivumgebung für ${var.usecase}"
   tags                = var.tags
