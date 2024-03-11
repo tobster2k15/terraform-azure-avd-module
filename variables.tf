@@ -357,11 +357,4 @@ variable "app_type" {
   type        = string
   description = "The type of the application."
   default     = "RemoteApp"
-  validation {
-    condition = (
-      var.app_type == "Desktop" ||
-      var.app_type == "RemoteApp"
-    )
-    error_message = "Possible Inputs are Desktop or RemoteApp."
-  }
 }
