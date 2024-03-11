@@ -20,7 +20,7 @@ variable "region" {
 variable "pool_type" {
   type        = string
   description = "The pool type."
-  default     = "pooled"
+  default     = "Pooled"
 }
 variable "pool_number" {
   type        = number
