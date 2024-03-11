@@ -20,14 +20,7 @@ variable "region" {
 variable "pool_type" {
   type        = string
   description = "The pool type."
-  validation {
-    condition = anytrue([
-      lower(var.pool_type) == "desktop",
-      lower(var.pool_type) == "shareddesktop",
-      lower(var.pool_type) == "application"
-    ])
-    error_message = "The var.pool_type input was incorrect. Please select desktop, shareddesktop, or application."
-  }
+  default     = "pooled"
 }
 variable "pool_number" {
   type        = number
