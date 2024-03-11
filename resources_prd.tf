@@ -67,11 +67,11 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
 }
 # # The association object ties the application group(s) to the workspace.
 # # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace_application_group_association
-# resource "azurerm_virtual_desktop_workspace_application_group_association" "association" {
-#   for_each             = var.avd_access_prd
-#   application_group_id = azurerm_virtual_desktop_application_group.app_group[each.value].id
-#   workspace_id         = azurerm_virtual_desktop_workspace.workspace.id
-# }
+resource "azurerm_virtual_desktop_workspace_application_group_association" "association" {
+  for_each             = var.avd_access_prd
+  application_group_id = azurerm_virtual_desktop_application_group.app_group[each.value].id
+  workspace_id         = azurerm_virtual_desktop_workspace.workspace.id
+}
 # AAD group role and scope assignment.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment
 resource "azurerm_role_assignment" "rbac" {
