@@ -275,7 +275,7 @@ resource "azurerm_resource_group_template_deployment" "aib" {
                 "source": "azureVmImageBuilder",
                 "baseosimg": "windows11"
               },
-              "replicationRegions": [${join(",", formatlist("\"%s\"", var.resource_group_location))}]
+              "replicationRegions": [${join(",", formatlist("\"%s\"", var.location))}]
             }
           ]
         }
