@@ -136,6 +136,9 @@ resource "azurerm_windows_virtual_machine" "vm" {
   tags = merge(var.tags, {
     Automation = "OU check - AVD"
   })
+  lifecycle {
+    ignore_changes = [identity]
+  }
 }
 # The sessionhost's NIC.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface
