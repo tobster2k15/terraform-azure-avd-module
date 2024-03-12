@@ -111,7 +111,7 @@ resource "azurerm_resource_group_template_deployment" "aib" {
       value = var.aib_api_version
     }
     "svclocation" = {
-      value = var.resource_group_location
+      value = var.location
     }
   })
 
@@ -147,7 +147,7 @@ resource "azurerm_resource_group_template_deployment" "aib" {
         "identity": {
           "type": "UserAssigned",
           "userAssignedIdentities": {
-            "${azurerm_user_assigned_identity.aib.id}": {}
+            "${azurerm_user_assigned_identity.aib[count.index].id}": {}
           }
         },
   
