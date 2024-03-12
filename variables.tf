@@ -364,3 +364,9 @@ variable "img_language"{
   description = "The language of the image."
   default     = "English (United States)"
 }
+
+variable "aib_api_version" {
+  type        = string
+  description = "The API version of the image builder."
+  default     = "2019-04-01"
+}

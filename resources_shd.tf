@@ -99,8 +99,9 @@ resource "azurerm_shared_image" "aib" {
 }
 
 resource "azurerm_resource_group_template_deployment" "aib" {
+  count               = var.img_builder_enabled == true ? 1 : 0
   name                = local.image_builder_name
-  resource_group_name = azurerm_resource_group.myrg_shd.name
+  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
   deployment_mode     = "Incremental"
   parameters_content = jsonencode({
     "imageTemplateName" = {
@@ -268,7 +269,7 @@ resource "azurerm_resource_group_template_deployment" "aib" {
           "distribute": [
             {
               "type": "SharedImage",
-              "galleryImageId": "${azurerm_shared_image.aib.id}",
+              "galleryImageId": "${azurerm_shared_image.aib[count.index].id}",
               "runOutputName": "[parameters('imageTemplateName')]",
               "artifactTags": {
                 "source": "azureVmImageBuilder",
@@ -301,7 +302,7 @@ resource "null_resource" "install_az_cli" {
   }
   provisioner "local-exec" {
     command = <<EOF
-    ./env/usr/bin/az resource invoke-action --resource-group ${azurerm_resource_group.myrg_shd.name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
+    ./env/usr/bin/az resource invoke-action --resource-group ${azurerm_resource_group.myrg_shd[count.index].name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
     EOF
   }
   depends_on = [
