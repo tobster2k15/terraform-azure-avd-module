@@ -63,7 +63,8 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
   resource_group_name = azurerm_resource_group.myrg.name
   type                = var.app_type != "RemoteApp" ? "Desktop" : "RemoteApp"
   host_pool_id        = azurerm_virtual_desktop_host_pool.pool.id
-  friendly_name       = "Produktivumgebung für ${var.usecase}"
+  friendly_name       = "${var.usecase}"
+  description         = "Production Environment for ${var.usecase}"
   tags                = var.tags
 }
 # # The association object ties the application group(s) to the workspace.

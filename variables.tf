@@ -358,3 +358,9 @@ variable "app_type" {
   description = "The type of the application."
   default     = "RemoteApp"
 }
+
+variable "img_language"{
+  type        = string
+  description = "The language of the image."
+  default     = "English (United States)"
+}

@@ -98,6 +98,220 @@ resource "azurerm_shared_image" "aib" {
   }
 }
 
+resource "azurerm_resource_group_template_deployment" "aib" {
+  name                = local.image_builder_name
+  resource_group_name = azurerm_resource_group.myrg_shd.name
+  deployment_mode     = "Incremental"
+  parameters_content = jsonencode({
+    "imageTemplateName" = {
+      value = local.image_builder_name
+    },
+    "api-version" = {
+      value = var.aib_api_version
+    }
+    "svclocation" = {
+      value = var.resource_group_location
+    }
+  })
+
+  template_content = <<TEMPLATE
+  {
+    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "imageTemplateName": {
+        "type": "string"
+      },
+      "api-version": {
+        "type": "string"
+      },
+      "svclocation": {
+        "type": "string"
+      }
+    },
+  
+    "variables": {},
+  
+    "resources": [
+      {
+        "name": "[parameters('imageTemplateName')]",
+        "type": "Microsoft.VirtualMachineImages/imageTemplates",
+        "apiVersion": "[parameters('api-version')]",
+        "location": "[parameters('svclocation')]",
+        "dependsOn": [],
+        "tags": {
+          "imagebuilderTemplate": "AzureImageBuilderSIG",
+          "userIdentity": "enabled"
+        },
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": {
+            "${azurerm_user_assigned_identity.aib.id}": {}
+          }
+        },
+  
+        "properties": {
+          "buildTimeoutInMinutes": 200,
+  
+          "vmProfile": {
+            "vmSize": "Standard_DS4_v2",
+            "osDiskSizeGB": 127
+          },
+  
+          "source": {
+            "type": "PlatformImage",
+            "publisher": "${var.publisher}",
+            "offer": "${var.offer}",
+            "sku": "${var.sku}",
+            "version": "latest"
+          },
+          
+          "customize": [
+            {
+            "name": "avdBuiltInScript_installLanguagePacks",
+            "type": "File",
+            "destination": "C:\\AVDImage\\installLanguagePacks.ps1",
+            "sourceUri": "https://raw.githubusercontent.com/Azure/RDS-Templates/master/CustomImageTemplateScripts/CustomImageTemplateScripts_2023-11-20/InstallLanguagePacks.ps1"
+            },
+          {
+            "name": "avdBuiltInScript_installLanguagePacks-parameter",
+            "type": "PowerShell",
+            "inline": [
+              "C:\\AVDImage\\installLanguagePacks.ps1 -LanguageList \"German (Germany)\""
+            ],
+            "runAsSystem": true,
+            "runElevated": true
+          },
+          {
+            "name": "avdBuiltInScript_installLanguagePacks-windowsUpdate",
+            "type": "WindowsUpdate"
+          },
+          {
+            "name": "avdBuiltInScript_installLanguagePacks-windowsRestart",
+            "type": "WindowsRestart",
+            "restartCheckCommand": "",
+            "restartCommand": "",
+            "restartTimeout": "10m"
+          },
+          {
+            "name": "avdBuiltInScript_setDefaultLanguage",
+            "type": "File",
+            "destination": "C:\\AVDImage\\setDefaultLanguage.ps1",
+            "sourceUri": "https://raw.githubusercontent.com/Azure/RDS-Templates/master/CustomImageTemplateScripts/CustomImageTemplateScripts_2023-11-20/SetDefaultLang.ps1"
+          },
+          {
+            "name": "avdBuiltInScript_setDefaultLanguage-parameter",
+            "type": "PowerShell",
+            "inline": [
+              "C:\\AVDImage\\setDefaultLanguage.ps1 -Language \"${var.img_language}\""
+            ],
+            "runAsSystem": true,
+            "runElevated": true
+          },
+          {
+            "name": "avdBuiltInScript_setDefaultLanguage-windowsUpdate",
+            "type": "WindowsUpdate"
+          },
+          {
+            "name": "avdBuiltInScript_setDefaultLanguage-windowsRestart",
+            "type": "WindowsRestart",
+            "restartCheckCommand": "",
+            "restartCommand": "",
+            "restartTimeout": "5m"
+          },
+          {
+            "name": "avdBuiltInScript_timeZoneRedirection",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Azure/RDS-Templates/master/CustomImageTemplateScripts/CustomImageTemplateScripts_2023-11-20/TimezoneRedirection.ps1",
+            "type": "PowerShell"
+          },
+          {
+            "destination": "C:\\AVDImage\\windowsOptimization.ps1",
+            "name": "avdBuiltInScript_windowsOptimization",
+            "sourceUri": "https://raw.githubusercontent.com/Azure/RDS-Templates/master/CustomImageTemplateScripts/CustomImageTemplateScripts_2023-11-20/WindowsOptimization.ps1",
+            "type": "File"
+          },
+          {
+            "inline": [
+              "C:\\AVDImage\\windowsOptimization.ps1 -Optimizations \"WindowsMediaPlayer\",\"ScheduledTasks\",\"DefaultUserSettings\",\"Autologgers\",\"Services\",\"NetworkOptimizations\",\"DiskCleanup\",\"RemoveLegacyIE\""
+            ],
+            "name": "avdBuiltInScript_windowsOptimization-parameter",
+            "runAsSystem": true,
+            "runElevated": true,
+            "type": "PowerShell"
+          },
+          {
+            "name": "avdBuiltInScript_removeAppxPackages",
+            "type": "File",
+            "destination": "C:\\AVDImage\\removeAppxPackages.ps1",
+            "sourceUri": "https://raw.githubusercontent.com/Azure/RDS-Templates/master/CustomImageTemplateScripts/CustomImageTemplateScripts_2023-11-20/RemoveAppxPackages.ps1"
+          },
+          {
+            "name": "avdBuiltInScript_removeAppxPackages-parameter",
+            "type": "PowerShell",
+            "inline": [
+              "C:\\AVDImage\\removeAppxPackages.ps1 -AppxPackages \"Microsoft.BingNews\",\"Clipchamp.Clipchamp\",\"Microsoft.BingWeather\",\"Microsoft.GetHelp\",\"Microsoft.GamingApp\",\"Microsoft.Getstarted\",\"Microsoft.MicrosoftOfficeHub\",\"Microsoft.Office.OneNote\",\"Microsoft.MicrosoftSolitaireCollection\",\"Microsoft.MicrosoftStickyNotes\",\"Microsoft.MSPaint\",\"Microsoft.People\",\"Microsoft.PowerAutomateDesktop\",\"Microsoft.ScreenSketch\",\"Microsoft.SkypeApp\",\"Microsoft.Todos\",\"Microsoft.WindowsAlarms\",\"Microsoft.WindowsCamera\",\"Microsoft.windowscommunicationsapps\",\"Microsoft.WindowsFeedbackHub\",\"Microsoft.WindowsMaps\",\"Microsoft.WindowsSoundRecorder\",\"Microsoft.Xbox.TCUI\",\"Microsoft.XboxGameOverlay\",\"Microsoft.XboxGamingOverlay\",\"Microsoft.XboxIdentityProvider\",\"Microsoft.XboxSpeechToTextOverlay\",\"Microsoft.YourPhone\",\"Microsoft.ZuneMusic\",\"Microsoft.ZuneVideo\",\"Microsoft.XboxApp\""
+            ],
+            "runAsSystem": true,
+            "runElevated": true
+          },
+          {
+            "name": "avdBuiltInScript_windowsUpdate",
+            "type": "WindowsUpdate"
+          },
+          {
+            "name": "avdBuiltInScript_windowsUpdate-windowsRestart",
+            "type": "WindowsRestart"
+          }
+          ],
+          "distribute": [
+            {
+              "type": "SharedImage",
+              "galleryImageId": "${azurerm_shared_image.aib.id}",
+              "runOutputName": "[parameters('imageTemplateName')]",
+              "artifactTags": {
+                "source": "azureVmImageBuilder",
+                "baseosimg": "windows11"
+              },
+              "replicationRegions": [${join(",", formatlist("\"%s\"", var.resource_group_location))}]
+            }
+          ]
+        }
+      }
+    ]
+  }
+TEMPLATE
+
+  depends_on = [
+    time_sleep.aib,
+    azurerm_shared_image.aib
+  ]
+}
+
+resource "null_resource" "install_az_cli" {
+  provisioner "local-exec" {
+    command = <<EOF
+      . /etc/lsb-release
+      wget https://packages.microsoft.com/repos/azure-cli/pool/main/a/azure-cli/azure-cli_2.36.0-1~$${DISTRIB_CODENAME}_all.deb
+      mkdir ./env && dpkg -x *.deb ./env
+      ./env/usr/bin/az login --service-principal -u "${var.ARM_CLIENT_ID}" -p "${var.ARM_CLIENT_SECRET}" -t "${var.ARM_TENANT_ID}"
+      ./env/usr/bin/az account show
+    EOF
+  }
+  provisioner "local-exec" {
+    command = <<EOF
+    ./env/usr/bin/az resource invoke-action --resource-group ${azurerm_resource_group.myrg_shd.name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
+    EOF
+  }
+  depends_on = [
+    azurerm_resource_group_template_deployment.aib,
+  ]
+  triggers = {
+    always_run = uuid()
+  }
+}
+
 ############################################################################################################
 ############################################### SQL DB #####################################################
 ############################################################################################################
