@@ -291,6 +291,7 @@ TEMPLATE
 }
 
 resource "null_resource" "install_az_cli" {
+  count     = var.img_builder_enabled == true ? 1 : 0
   provisioner "local-exec" {
     command = <<EOF
       . /etc/lsb-release
@@ -302,7 +303,7 @@ resource "null_resource" "install_az_cli" {
   }
   provisioner "local-exec" {
     command = <<EOF
-    ./env/usr/bin/az resource invoke-action --resource-group ${local.rg_name_shd[count.index].name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
+    ./env/usr/bin/az resource invoke-action --resource-group ${azurerm_resource_group.myrg_shd[count.index].name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
     EOF
   }
   depends_on = [
