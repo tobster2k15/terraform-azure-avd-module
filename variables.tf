@@ -370,3 +370,21 @@ variable "aib_api_version" {
   description = "The API version of the image builder."
   default     = "2019-04-01"
 }
+
+variable "ARM_CLIENT_ID"{
+  type        = string
+  description = "Client ID"
+  sensitive   = true
+}
+
+variable "ARM_TENANT_ID"{
+  type        = string
+  description = "Tenant ID"
+  sensitive   = true
+}
+
+variable "ARM_CLIENT_SECRET"{
+  type        = string
+  description = "Client Secret"
+  sensitive   = true
+}
