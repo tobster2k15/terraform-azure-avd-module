@@ -142,8 +142,8 @@ resource "azurerm_windows_virtual_machine" "vm" {
 resource "azurerm_network_interface" "nic" {
   count               = var.vmcount
   name                = "${local.nic_name}-${format("%03d", count.index + 1)}"
-  resource_group_name = var.resource_group_name
-  location            = var.location
+  resource_group_name = azurerm_resource_group.myrg.name
+  location            = azurerm_resource_group.myrg.location
   ip_configuration {
     name                          = "${local.ipc_name}${format("%03d", count.index + 1)}"
     subnet_id                     = var.subnet_id_prd
