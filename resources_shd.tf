@@ -302,7 +302,7 @@ resource "null_resource" "install_az_cli" {
   }
   provisioner "local-exec" {
     command = <<EOF
-    ./env/usr/bin/az resource invoke-action --resource-group ${azurerm_resource_group.myrg_shd.name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
+    ./env/usr/bin/az resource invoke-action --resource-group ${azurerm_resource_group.myrg_shd[count.index].name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
     EOF
   }
   depends_on = [
