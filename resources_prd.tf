@@ -131,7 +131,8 @@ resource "azurerm_windows_virtual_machine" "vm" {
     }
   }
   depends_on = [
-    azurerm_network_interface.nic
+    azurerm_network_interface.nic,
+    null_resource.install_az_cli
   ]
   tags = merge(var.tags, {
     Automation = "OU check - AVD"
