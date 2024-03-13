@@ -344,7 +344,7 @@ variable "publisher" {
 variable "offer" {
   type        = string
   description = "The offer of the image."
-  default     = "office-365"
+  default     = "windows-11"
 }
 
 variable "sku" {
