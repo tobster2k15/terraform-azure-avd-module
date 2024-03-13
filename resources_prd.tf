@@ -120,9 +120,9 @@ resource "azurerm_windows_virtual_machine" "vm" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  source_image_id = var.img_builder_enabled == true ? azurerm_shared_image.aib[count.index].id : var.market_place_image
+  source_image_id = var.managed_image_id
   dynamic "source_image_reference" {
-    for_each = azurerm_shared_image.aib[count.index].id == null ? ["azurerm_shared_image.aib[count.index].id is null, single loop!"] : []
+    for_each = var.managed_image_id == null ? ["var.managed_image_id is null, single loop!"] : []
     content {
       publisher = var.market_place_image.publisher
       offer     = var.market_place_image.offer
@@ -131,8 +131,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
     }
   }
   depends_on = [
-    azurerm_network_interface.nic,
-    null_resource.install_az_cli
+    azurerm_network_interface.nic
   ]
   tags = merge(var.tags, {
     Automation = "OU check - AVD"
