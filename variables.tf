@@ -368,7 +368,7 @@ variable "img_language"{
 variable "aib_api_version" {
   type        = string
   description = "The API version of the image builder."
-  default     = "2019-04-01"
+  default     = "2022-07-01"
 }
 
 variable "ARM_CLIENT_ID"{
