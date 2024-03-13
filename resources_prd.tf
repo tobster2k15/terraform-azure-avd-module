@@ -120,9 +120,9 @@ resource "azurerm_windows_virtual_machine" "vm" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  source_image_id = azurerm_shared_image.aib.id
+  source_image_id = azurerm_shared_image.aib[count.index].id
   dynamic "source_image_reference" {
-    for_each = azurerm_shared_image.aib.id == null ? ["var.managed_image_id is null, single loop!"] : []
+    for_each = azurerm_shared_image.aib[count.index].id == null ? ["azurerm_shared_image.aib[count.index].id is null, single loop!"] : []
     content {
       publisher = var.market_place_image.publisher
       offer     = var.market_place_image.offer
