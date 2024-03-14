@@ -347,12 +347,6 @@ variable "avd_access_dev" {
   default     = null
 }
 
-variable "avd_access_dev" {
-  type        = set(string)
-  description = "The access tier of the productive AVD."
-  default     = null
-}
-
 variable "img_builder_enabled" {
   type        = bool
   description = "Enable the image builder."
