@@ -130,6 +130,9 @@ resource "azurerm_windows_virtual_machine" "vm" {
       version   = var.market_place_image.version
     }
   }
+  boot_diagnostics {
+    storage_uri = ""
+  }
   depends_on = [
     azurerm_network_interface.nic
   ]
