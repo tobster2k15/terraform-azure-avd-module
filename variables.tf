@@ -299,7 +299,7 @@ variable "subnet_id_shd" {
   default     = null
 }
 
-variable "subnet_id_prd" {
+variable "subnet_id" {
   type        = string
   description = "The ID of the subnet."
   default     = null
@@ -336,12 +336,6 @@ variable "st_access_dev" {
 }
 
 variable "avd_access_prd" {
-  type        = list(string)
-  description = "The access tier of the productive AVD."
-  default     = null
-}
-
-variable "avd_access_dev" {
   type        = list(string)
   description = "The access tier of the productive AVD."
   default     = null

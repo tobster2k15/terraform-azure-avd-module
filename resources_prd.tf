@@ -2,7 +2,7 @@
 ### Resources
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
 resource "azurerm_resource_group" "myrg" {
-  name     = local.rg_name
+  name     = var.resource_group_name
   location = var.location
   tags     = var.tags
 }
@@ -152,7 +152,7 @@ resource "azurerm_network_interface" "nic" {
   location            = azurerm_resource_group.myrg.location
   ip_configuration {
     name                          = "${local.ipc_name}${format("%03d", count.index + 1)}"
-    subnet_id                     = var.subnet_id_prd
+    subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
   }
   tags = var.tags
