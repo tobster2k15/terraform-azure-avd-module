@@ -131,7 +131,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
     }
   }
   boot_diagnostics {
-    storage_uri = ""
+    storage_account_uri = ""
   }
   depends_on = [
     azurerm_network_interface.nic
