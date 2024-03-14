@@ -195,7 +195,7 @@ variable "workspace_key" {
 variable "vmsize" {
   type        = string
   description = "The VM SKU desired for the pool. If none are selected, VMSize will be chosen based on var.pool_type."
-  default     = "standard_d2as_v4"
+  default     = "Standard_D2as_v4"
 }
 # To-do Azure Automation runbook to key off OU VM tag. This will be included within another repository.
 variable "ou" {
