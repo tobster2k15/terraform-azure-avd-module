@@ -14,7 +14,7 @@ locals {
   aad_group_list = var.application_map != null ? distinct(flatten([for k, v in var.application_map : toset(v.avd_access_prd)])) : [var.aad_group_desktop]
   # aad_group_list = var.application_map != null ? distinct(values({ for k, v in var.application_map : k => toset(v.avd_access_prd) })) : ["${var.aad_group_desktop}"]
   applications       = var.application_map != null ? var.application_map : tomap({}) # Null is not accepted as for_each value, substituing for an empty map if null.
-  applications_dev   = var.application_map_dev != null ? var.application_map_dev : tomap({})
+  # applications_dev   = var.application_map_dev != null ? var.application_map_dev : tomap({})
 }
 # Calculates if an extension type is needed for this pool's sessionhosts.
 locals {
