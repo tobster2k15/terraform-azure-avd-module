@@ -47,16 +47,6 @@ variable "application_map" {
   default     = null
 }
 
-variable "application_map_dev" {
-  type = map(object({
-    app_name     = string
-    local_path   = string
-    cmd_argument = string
-    avd_access    = list(string)
-  }))
-  description = "A map of all applications and metadata. Required if var.pool_type == application."
-  default     = null
-}
 
 variable "desktop_assignment_type" {
   type        = string
@@ -335,7 +325,7 @@ variable "st_access_dev" {
   default     = null
 }
 
-variable "avd_access_prd" {
+variable "avd_access" {
   type        = list(string)
   description = "The access tier of the productive AVD."
   default     = null

@@ -3,16 +3,16 @@ data "azurerm_role_definition" "avduser_role" {
 }
 # Each AAD group needed for permissioning. 
 data "azuread_group" "avd_group_prd" {
-  for_each         = toset(var.avd_access_prd)
+  for_each         = toset(var.avd_access)
   display_name     = each.value
   security_enabled = true
 }
  
-data "azuread_group" "avd_group_dev" {
-  for_each         = toset(var.avd_access_dev)
-  display_name     = each.value
-  security_enabled = true
-}
+# data "azuread_group" "avd_group_dev" {
+#   for_each         = toset(var.avd_access_dev)
+#   display_name     = each.value
+#   security_enabled = true
+# }
 
 data "azurerm_role_definition" "storage_role" {
   name    = "Storage File Data SMB Share Contributor"
