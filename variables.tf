@@ -436,3 +436,15 @@ variable "vmsize_dev"{
   description = "The VM SKU desired for the pool. If none are selected, VMSize will be chosen based on var.pool_type."
   default     = "Standard_D2as_v4"
 }
+
+variable "vmcount_dev" {
+  type        = number
+  description = "The number of VMs requested for this pool."
+  default     = 0
+}
+
+variable "st_ou_path" {
+  type        = string
+  description = "The OU path of the storage account."
+  default     = ""
+}

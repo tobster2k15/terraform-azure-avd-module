@@ -110,7 +110,7 @@ resource "azurerm_virtual_desktop_application" "application_dev" {
 # The virtual machine and disk.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine.html
 resource "azurerm_windows_virtual_machine" "vm_dev" {
-  count                 = var.vmcount_dev
+  count                 = var.dev_hostpool_enabled == true ? var.vmcount_dev : 0
   name                  = "${local.vm_name}-${format("%03d", count.index + 1)}"
   resource_group_name   = azurerm_resource_group.myrg_dev[count.index].name
   location              = azurerm_resource_group.myrg[count.index].location
@@ -150,8 +150,8 @@ resource "azurerm_windows_virtual_machine" "vm_dev" {
 }
 # The sessionhost's NIC.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface
-resource "azurerm_network_interface" "nic" {
-  count               = var.vmcount_dev
+resource "azurerm_network_interface" "nic_dev" {
+  count               = var.dev_hostpool_enabled == true ? var.vmcount_dev : 0
   name                = "${local.nic_name_dev}-${format("%03d", count.index + 1)}"
   resource_group_name = azurerm_resource_group.myrg_dev[count.index].name
   location            = azurerm_resource_group.myrg_dev[count.index].location
@@ -165,8 +165,8 @@ resource "azurerm_network_interface" "nic" {
 # Required extension - the DSC installs all three agents and passes the registration token to the AVD agent.
 # As local.token is updated dynamically, the lifecycle block is used to prevent needless recreation of the resource.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_extension.html
-resource "azurerm_virtual_machine_extension" "vm_dsc_ext" {
-  count                      = var.vmcount_dev
+resource "azurerm_virtual_machine_extension" "vm_dsc_ext_dev" {
+  count                      = var.dev_hostpool_enabled == true ? var.vmcount_dev : 0
   name                       = "register-session-host-vmext"
   virtual_machine_id         = azurerm_windows_virtual_machine.vm_dev.*.id[count.index]
   publisher                  = "Microsoft.Powershell"
@@ -201,8 +201,8 @@ PROTECTED_SETTINGS
 # Optional extension - only created if var.domain does not equal null.
 # The lifecycle block prevents recreation for the existing VMs ext. when credentials are updated.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_extension.html
-resource "azurerm_virtual_machine_extension" "domain_join_ext" {
-  count                      = local.extensions.domain_join
+resource "azurerm_virtual_machine_extension" "domain_join_ext_dev" {
+  count                      = local.extensions.domain_join_dev
   name                       = "join-domain"
   virtual_machine_id         = azurerm_windows_virtual_machine.vm_dev.*.id[count.index]
   publisher                  = "Microsoft.Compute"
@@ -226,4 +226,22 @@ PROTECTED_SETTINGS
   lifecycle {
     ignore_changes = [settings, protected_settings]
   }
+}
+
+resource "azurerm_virtual_machine_extension" "join_storageaccount" {
+  count                = var.fslogix_enabled == true && var.dev_hostpool_enabled == true ? 1 : 0
+  name                 = "join_storageaccount"
+  virtual_machine_id   = azurerm_windows_virtual_machine.myvm_dev[count.index].id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.9"
+
+  protected_settings   = <<SETTINGS
+  {    
+    "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.st_join.rendered)}')) | Out-File -filepath ${path.root}/scripts/st_join.ps1\" && powershell -ExecutionPolicy Unrestricted -File st_join.ps1 -ResourceGroupName ${data.template_file.st_join.vars.ResourceGroupName} -StorageAccountName ${data.template_file.st_join.vars.StorageAccountName} -OrganizationalUnitDistinguishedName ${data.template_file.st_join.vars.OUName} -ClientId ${data.template_file.st_join.vars.ClientId} -SubscriptionId ${data.template_file.st_join.vars.SubscriptionId} - $DomainAccountType ${data.template_file.st_join.vars.DomainAccountType} -IdentityServiceProvider ${data.template_file.st_join.vars.IdentityServiceProvider} -StorageAccountFqdn ${data.template_file.st_join.vars.StorageAccountFqdn} -SamAccountName ${data.template_file.st_join.vars.SamAccountName} -EncryptionType ${data.template_file.st_join.vars.EncryptionType}"
+  }
+  SETTINGS
+  
+  depends_on           = [azurerm_virtual_machine_extension.domain_join_ext_dev]
+  
 }
