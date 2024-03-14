@@ -426,3 +426,9 @@ variable "st_ou_path" {
   description = "The OU path of the storage account."
   default     = ""
 }
+
+variable "environment" {
+  type        = string
+  description = "The environment of the pool."
+  default     = "prd"
+}

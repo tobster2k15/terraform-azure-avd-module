@@ -1,7 +1,7 @@
 # This local is used to create the workspace prefix.
 locals {
   list = {
-    prod_workspace  = terraform.workspace == "default" ? "prd" : ""
+    prod_workspace  = terraform.workspace == "default" ? "${var.environment}" : ""
     dev_workspace   = terraform.workspace == "development" ? "dev" : ""
     uat_workspace   = terraform.workspace == "uat" ? "UT" : ""
     other_workspace = terraform.workspace != "default" && terraform.workspace != "development" && terraform.workspace != "uat" ? "TE" : ""
@@ -12,7 +12,7 @@ locals {
 # Locates unique AAD groups for application group for_each loop. 
 locals {
   aad_group_list = var.application_map != null ? distinct(flatten([for k, v in var.application_map : toset(v.avd_access)])) : [var.aad_group_desktop]
-  # aad_group_list = var.application_map != null ? distinct(values({ for k, v in var.application_map : k => toset(v.avd_access_prd) })) : ["${var.aad_group_desktop}"]
+  # aad_group_list = var.application_map != null ? distinct(values({ for k, v in var.application_map : k => toset(v.avd_access_${var.environment}) })) : ["${var.aad_group_desktop}"]
   applications       = var.application_map != null ? var.application_map : tomap({}) # Null is not accepted as for_each value, substituing for an empty map if null.
   # applications_dev   = var.application_map_dev != null ? var.application_map_dev : tomap({})
 }
@@ -38,47 +38,47 @@ locals {
 #Namingconvention: Counter wird bei den einzelnen Namen mit angegeben
 locals {
 #Prod Naming
-rg_name             =   "rg-${var.usecase}-prd-001" #bei count => 2 muss instance auskommentiert werden
-vm_name             =   "vm${var.usecase_for_vm}prd" #${var.instance}
-ipc_name            =   "ipc-nic-prd-" #${var.instance}
+rg_name             =   "rg-${var.usecase}-${var.environment}-001" #bei count => 2 muss instance auskommentiert werden
+vm_name             =   "vm${var.usecase_for_vm}${var.environment}" #${var.instance}
+ipc_name            =   "ipc-nic-${var.environment}-" #${var.instance}
 rt_name             =   "rt-${var.usecase}-default"
 osd_name            =   "osdisk${local.vm_name}"
-vdpool_name         =   "vdpool-${var.usecase}-prd-001"
-nic_name            =   "nic-${var.usecase}-prd" #${var.instance} #Resource Group for 
-vds_name            =   "vdscaling-${var.usecase}-prd-001"
+vdpool_name         =   "vdpool-${var.usecase}-${var.environment}-001"
+nic_name            =   "nic-${var.usecase}-${var.environment}" #${var.instance} #Resource Group for 
+vds_name            =   "vdscaling-${var.usecase}-${var.environment}-001"
 app_group_name      =   "vdpool-${var.usecase}-DAG"
 #Network Naming
-rg_vnet_name        =   "rg-vnet-${var.usecase}-prd-${var.region}-001"
-vnet_name           =   "vnet-${var.usecase}-prd-${var.region}-001"
-snet_name           =   "snet-${var.usecase}-prd-001"
-snet_name_dev       =   "snet-${var.usecase}-dev-001"
+rg_vnet_name        =   "rg-vnet-${var.usecase}-${var.environment}-${var.region}-001"
+vnet_name           =   "vnet-${var.usecase}-${var.environment}-${var.region}-001"
+snet_name           =   "snet-${var.usecase}-${var.environment}-001"
+snet_name_dev       =   "snet-${var.usecase}-${var.environment}-001"
 snet_name_shd       =   "snet-${var.usecase}-shd-"
-nsg_name            =   "nsg-${var.usecase}-prd-${var.region}-001"
-pip_name            =   "pip-${var.usecase}-prd-001" #${var.instance}
+nsg_name            =   "nsg-${var.usecase}-${var.environment}-${var.region}-001"
+pip_name            =   "pip-${var.usecase}-${var.environment}-001" #${var.instance}
 pep_name            =   "pep-${var.usecase}-shd-${var.region}"
-psc_name            =   "psc-${var.usecase}-prd-${var.region}"
+psc_name            =   "psc-${var.usecase}-${var.environment}-${var.region}"
 #DEV Naming
-rg_name_dev         =   "rg-${var.usecase}-dev-001"
-vm_name_dev         =   "vm${var.usecase_for_vm}dev-001" 
+rg_name_dev         =   "rg-${var.usecase}-${var.environment}-001"
+vm_name_dev         =   "vm${var.usecase_for_vm}${var.environment}-001" 
 ipc_name_dev        =   "ipc-nic-dev" 
 osd_name_dev        =   "osdisk${local.vm_name_dev}001"
-vdpool_name_dev     =   "vdpool-${var.usecase}-dev-001"
+vdpool_name_dev     =   "vdpool-${var.usecase}-${var.environment}-001"
 nic_name_dev        =   "nic-${var.usecase}-dev"
-app_group_name_dev  =   "vdpool-${var.usecase}-dev-DAG"
+app_group_name_dev  =   "vdpool-${var.usecase}-${var.environment}-DAG"
 #SHD Naming
-workspace           =   "vdws-${var.usecase}-prd-001"
-workspace_dev       =   "vdws-${var.usecase}-dev-001"
+workspace           =   "vdws-${var.usecase}-${var.environment}-001"
+workspace_dev       =   "vdws-${var.usecase}-${var.environment}-001"
 rg_name_shd         =   "rg-${var.usecase}-shd-001"
-st_name             =   "st${var.usecase}vdiprd001"
+st_name             =   "st${var.usecase}vdi${var.environment}001"
 st_share_name       =   "share${var.usecase}fslogix01"
 sql_name            =   "sql-${var.usecase}-shd-001"
 sql_db_prd          =   "sqldb-${var.usecase}-production"
 sql_db_archive      =   "sqldb-${var.usecase}-archive"
 rg_name_bck         =   "rg-${var.usecase}-shd-002"
 bck_vault_name      =   "bvault-${var.usecase}-shd-001"
-image_builder_name  =   "aib-${var.usecase}-prd-${local.current_day}-001" 
-managed_id_name     =   "id-aib-${var.usecase}-prd"
-rbac_name           =   "id-RBAC-${var.usecase}-prd"
+image_builder_name  =   "aib-${var.usecase}-${var.environment}-${local.current_day}-001" 
+managed_id_name     =   "id-aib-${var.usecase}-${var.environment}"
+rbac_name           =   "id-RBAC-${var.usecase}-${var.environment}"
 img_gal_name        =   "gal_${var.usecase}_shd"
 img_version         =   "it-${var.usecase}-shd-001"
 
