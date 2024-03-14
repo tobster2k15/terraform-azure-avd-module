@@ -41,11 +41,23 @@ variable "application_map" {
     app_name     = string
     local_path   = string
     cmd_argument = string
-    avd_access_prd    = list(string)
+    avd_access   = list(string)
   }))
   description = "A map of all applications and metadata. Required if var.pool_type == application."
   default     = null
 }
+
+variable "application_map_dev" {
+  type = map(object({
+    app_name     = string
+    local_path   = string
+    cmd_argument = string
+    avd_access    = list(string)
+  }))
+  description = "A map of all applications and metadata. Required if var.pool_type == application."
+  default     = null
+}
+
 variable "desktop_assignment_type" {
   type        = string
   description = "Sets the personal desktop assignment type."
@@ -203,6 +215,12 @@ variable "ou" {
   description = "The OU a VM should be placed within."
   default     = "" # Currently does not work, needs blank string to create VMs.
 }
+
+variable "ou_dev" {
+  type        = string
+  description = "The OU a VM should be placed within."
+  default     = "" # Currently does not work, needs blank string to create VMs.
+}
 variable "start_on_connect"{
   type        = bool
   description = "Start the VM when a user connects."
@@ -324,6 +342,12 @@ variable "avd_access_prd" {
 }
 
 variable "avd_access_dev" {
+  type        = list(string)
+  description = "The access tier of the productive AVD."
+  default     = null
+}
+
+variable "avd_access_dev" {
   type        = set(string)
   description = "The access tier of the productive AVD."
   default     = null
@@ -387,4 +411,28 @@ variable "ARM_CLIENT_SECRET"{
   type        = string
   description = "Client Secret"
   sensitive   = true
+}
+
+variable "dev_hostpool_enabled" {
+  type        = bool
+  description = "Enable the dev hostpool."
+  default     = false
+}
+
+variable "sql_db" {
+  type        = list(string)
+  description = "The name of the SQL database."
+  default     = null
+}
+
+variable "subnet_id_dev"{ 
+  type        = string
+  description = "The ID of the subnet."
+  default     = null
+}
+
+variable "vmsize_dev"{
+  type        = string
+  description = "The VM SKU desired for the pool. If none are selected, VMSize will be chosen based on var.pool_type."
+  default     = "Standard_D2as_v4"
 }

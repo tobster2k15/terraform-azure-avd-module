@@ -477,9 +477,9 @@ resource "azurerm_private_dns_a_record" "dnszone_st" {
 
 resource "azurerm_private_endpoint" "endpoint_st" {
   count               = var.fslogix_enabled == true ? 1 : 0
-  name                = local.pep_name
+  name                = "${local.pep_name}-st"
   location            = azurerm_resource_group.myrg_shd[count.index].location
-  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
+  resource_group_name = var.vnet_rg
   subnet_id           = var.subnet_id_shd
   tags                = var.tags
 

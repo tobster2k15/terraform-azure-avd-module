@@ -13,12 +13,14 @@ locals {
 locals {
   aad_group_list = var.application_map != null ? distinct(flatten([for k, v in var.application_map : toset(v.avd_access_prd)])) : [var.aad_group_desktop]
   # aad_group_list = var.application_map != null ? distinct(values({ for k, v in var.application_map : k => toset(v.avd_access_prd) })) : ["${var.aad_group_desktop}"]
-  applications   = var.application_map != null ? var.application_map : tomap({}) # Null is not accepted as for_each value, substituing for an empty map if null.
+  applications       = var.application_map != null ? var.application_map : tomap({}) # Null is not accepted as for_each value, substituing for an empty map if null.
+  applications_dev   = var.application_map_dev != null ? var.application_map_dev : tomap({})
 }
 # Calculates if an extension type is needed for this pool's sessionhosts.
 locals {
   extensions = {
     domain_join = var.domain != null ? var.vmcount : 0
+    sql_db      = var.sql_db != null ? toset(var.sql_db) : 0
   }
 }
 # VM Size 
@@ -41,7 +43,7 @@ ipc_name            =   "ipc-nic-prd-" #${var.instance}
 rt_name             =   "rt-${var.usecase}-default"
 osd_name            =   "osdisk${local.vm_name}"
 vdpool_name         =   "vdpool-${var.usecase}-prd-001"
-nic_name            =   "nic-${var.usecase}-prd-" #${var.instance} #Resource Group for 
+nic_name            =   "nic-${var.usecase}-prd" #${var.instance} #Resource Group for 
 vds_name            =   "vdscaling-${var.usecase}-prd-001"
 app_group_name      =   "vdpool-${var.usecase}-DAG"
 #Network Naming
@@ -57,10 +59,10 @@ psc_name            =   "psc-${var.usecase}-prd-${var.region}"
 #DEV Naming
 rg_name_dev         =   "rg-${var.usecase}-dev-001"
 vm_name_dev         =   "vm${var.usecase_for_vm}dev-001" 
-ipc_name_dev        =   "ipc-nic-dev-001" 
+ipc_name_dev        =   "ipc-nic-dev" 
 osd_name_dev        =   "osdisk${local.vm_name_dev}001"
 vdpool_name_dev     =   "vdpool-${var.usecase}-dev-001"
-nic_name_dev        =   "nic-${var.usecase}-dev-001"
+nic_name_dev        =   "nic-${var.usecase}-dev"
 app_group_name_dev  =   "vdpool-${var.usecase}-dev-DAG"
 #SHD Naming
 workspace           =   "vdws-${var.usecase}-prd-001"
@@ -80,7 +82,7 @@ img_gal_name        =   "gal_${var.usecase}_shd"
 img_version         =   "it-${var.usecase}-shd-001"
 
 current_timestamp   =   timestamp()
-current_day         =   formatdate("YYYY-MM-DD", local.current_timestamp)
+current_day         =   formatdate("YYYY-MM-DD-hh-mm", local.current_timestamp)
 
 #Standard Tags, die per Azure Policy geforced werden und vererbt werden
 }
