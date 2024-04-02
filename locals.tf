@@ -14,13 +14,11 @@ locals {
   aad_group_list = var.application_map != null ? distinct(flatten([for k, v in var.application_map : toset(v.avd_access)])) : [var.aad_group_desktop]
   # aad_group_list = var.application_map != null ? distinct(values({ for k, v in var.application_map : k => toset(v.avd_access_${var.environment}) })) : ["${var.aad_group_desktop}"]
   applications       = var.application_map != null ? var.application_map : tomap({}) # Null is not accepted as for_each value, substituing for an empty map if null.
-  # applications_dev   = var.application_map_dev != null ? var.application_map_dev : tomap({})
 }
 # Calculates if an extension type is needed for this pool's sessionhosts.
 locals {
   extensions = {
     domain_join = var.domain != null ? var.vmcount : 0
-    domain_join_dev = var.domain != null ? var.vmcount_dev : 0
     # sql_db      = var.sql_db != null ? toset(var.sql_db) : 0
   }
 }
@@ -74,7 +72,6 @@ st_share_name       =   "share${var.usecase}fslogix01"
 sql_name            =   "sql-${var.usecase}-shd-001"
 sql_db_prd          =   "sqldb-${var.usecase}-production"
 sql_db_archive      =   "sqldb-${var.usecase}-archive"
-rg_name_bck         =   "rg-${var.usecase}-shd-002"
 bck_vault_name      =   "bvault-${var.usecase}-shd-001"
 image_builder_name  =   "aib-${var.usecase}-${var.environment}-${local.current_day}-001" 
 managed_id_name     =   "id-aib-${var.usecase}-${var.environment}"
@@ -85,5 +82,4 @@ img_version         =   "it-${var.usecase}-shd-001"
 current_timestamp   =   timestamp()
 current_day         =   formatdate("YYYY-MM-DD-hh-mm", local.current_timestamp)
 
-#Standard Tags, die per Azure Policy geforced werden und vererbt werden
 }

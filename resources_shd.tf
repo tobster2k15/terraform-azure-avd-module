@@ -373,34 +373,36 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   location                      = azurerm_resource_group.myrg_shd[count.index].location
   administrator_login           = "admin123"
   administrator_password        = "Start123$"
-  sku_name                      = "B_Standard_B2ms"
-  version                       = "8.0.21"
+  sku_name                      = var.sql_sku
+  version                       = var.sql_version
   zone                          = "1"
   backup_retention_days         = 30
   geo_redundant_backup_enabled  = false
   tags                          = var.tags
   storage{
-    size_gb           = 25
+    size_gb            = var.sql_storage
     io_scaling_enabled = true
   }
   depends_on = [azurerm_private_dns_zone_virtual_network_link.mylink_sql]
 }
 
-# resource "azurerm_mysql_flexible_database" "mysqldb_prd" {
-#   name                = local.sql_db_prd
-#   resource_group_name = azurerm_resource_group.myrg_shd.name
-#   server_name         = azurerm_mysql_flexible_server.mysql.name
-#   charset             = var.sql_charset
-#   collation           = var.sql_collation
-# }
+resource "azurerm_mysql_flexible_database" "mysqldb_prd" {
+  count               = var.sql_enabled == true ? var.db_count : 0
+  name                = "${local.sql_db_prd}-${format("%03d", count.index + 1)}"
+  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
+  server_name         = azurerm_mysql_flexible_server.mysql[count.index].name
+  charset             = var.sql_charset
+  collation           = var.sql_collation
+}
 
-# resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
-#   name                = local.sql_db_archive
-#   resource_group_name = azurerm_resource_group.myrg_shd.name
-#   server_name         = azurerm_mysql_flexible_server.mysql.name
-#   charset             = var.sql_charset
-#   collation           = var.sql_collation
-# }
+resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
+  count               = var.sql_enabled == true ? var.db_count_archive : 0
+  name                = "${local.sql_db_archive}-${format("%03d", count.index + 1)}"
+  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
+  server_name         = azurerm_mysql_flexible_server.mysql[count.index].name
+  charset             = var.sql_charset
+  collation           = var.sql_collation
+}
 
 ############################################################################################################
 ########################################  Storage Account ##################################################
@@ -409,9 +411,15 @@ resource "azurerm_mysql_flexible_server" "mysql" {
 ## Azure Storage Accounts requires a globally unique names
 ## https://docs.microsoft.com/azure/storage/common/storage-account-overview
 ## Create a File Storage Account 
+resource "random_string" "random" {
+  length           = 16
+  special          = true
+  override_special = "/@£$"
+}
+
 resource "azurerm_storage_account" "storage" {
   count                             = var.fslogix_enabled == true ? 1 : 0
-  name                              = var.st_name
+  name                              = var.st_name == null ? "${random_string.random.result}-st" : var.st_name
   resource_group_name               = azurerm_resource_group.myrg_shd[count.index].name
   location                          = azurerm_resource_group.myrg_shd[count.index].location
   min_tls_version                   = "TLS1_2"
@@ -432,7 +440,7 @@ resource "azurerm_storage_account" "storage" {
 resource "azurerm_storage_share" "FSShare" {
   count            = var.fslogix_enabled == true ? 1 : 0
   name             = "fslogix"
-  quota            = "100"
+  quota            = var.share_size
   enabled_protocol = "SMB"
 
 

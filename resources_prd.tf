@@ -2,7 +2,7 @@
 ### Resources
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
 resource "azurerm_resource_group" "myrg" {
-  name     = var.resource_group_name
+  name     = local.rg_name
   location = var.location
   tags     = var.tags
 }

@@ -432,3 +432,51 @@ variable "environment" {
   description = "The environment of the pool."
   default     = "prd"
 }
+
+variable "share_size" {
+  type        = string
+  description = "The size of the share."
+  default     = "100"
+}
+
+variable "sql_charset" {
+  type        = string
+  description = "The charset of the SQL database."
+  default     = "utf8mb3"
+}
+
+variable "sql_collation" {
+  type        = string
+  description = "The collation of the SQL database."
+  default     = "utf8mb3_unicode_ci"
+}
+
+variable "sql_version" {
+  type        = string
+  description = "The version of the SQL database."
+  default     = "8.0.21"
+}
+
+variable "sql_sku" {
+  type        = string
+  description = "The SKU of the SQL database."
+  default     = "B_Standard_B1s"
+}
+
+variable "db_count" {
+  type        = number
+  description = "The number of databases."
+  default     = 0
+}
+
+variable "db_count_archive" {
+  type        = number
+  description = "The number of databases."
+  default     = 0
+}
+
+variable "sql_storage" {
+  type        = number
+  description = "The size of the SQL database."
+  default     = 25
+}
