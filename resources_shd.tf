@@ -414,8 +414,8 @@ resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
 resource "random_string" "random" {
   count           = var.fslogix_enabled == true && var.st_name == null ? 1 : 0
   length           = 16
-  special          = true
-  override_special = "/@£$"
+  lower            = true
+  special          = false
 }
 
 resource "azurerm_storage_account" "storage" {
