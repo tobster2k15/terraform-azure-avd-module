@@ -412,6 +412,7 @@ resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
 ## https://docs.microsoft.com/azure/storage/common/storage-account-overview
 ## Create a File Storage Account 
 resource "random_string" "random" {
+  count           = var.fslogix_enabled == true && var.st_name == null ? 1 : 0
   length           = 16
   special          = true
   override_special = "/@£$"
