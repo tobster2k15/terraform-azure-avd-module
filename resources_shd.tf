@@ -389,8 +389,8 @@ resource "azurerm_mysql_flexible_server" "mysql" {
 resource "azurerm_mysql_flexible_database" "mysqldb_prd" {
   count               = var.sql_enabled == true ? var.db_count : 0
   name                = "${local.sql_db_prd}-${format("%03d", count.index + 1)}"
-  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
-  server_name         = azurerm_mysql_flexible_server.mysql[count.index].name
+  resource_group_name = element(azurerm_resource_group.myrg_shd[count.index].name)
+  server_name         = element(azurerm_mysql_flexible_server.mysql[count.index].name)
   charset             = var.sql_charset
   collation           = var.sql_collation
 }
