@@ -70,14 +70,14 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
 # # The association object ties the application group(s) to the workspace.
 # # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace_application_group_association
 resource "azurerm_virtual_desktop_workspace_application_group_association" "association" {
-  for_each             = toset(var.avd_access)
+  for_each             = toset(local.aad_group_list)
   application_group_id = azurerm_virtual_desktop_application_group.applicationgroup.id
   workspace_id         = azurerm_virtual_desktop_workspace.workspace.id
 }
 # AAD group role and scope assignment.
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment
 resource "azurerm_role_assignment" "rbac" {
-  for_each           = toset(var.avd_access)
+  for_each           = toset(local.aad_group_list)
   scope              = azurerm_virtual_desktop_application_group.applicationgroup.id
   role_definition_id = data.azurerm_role_definition.avduser_role.id
   principal_id       = data.azuread_group.avd_group_prd[each.value].id

@@ -178,7 +178,7 @@ resource "azurerm_resource_group_template_deployment" "aib" {
             "name": "avdBuiltInScript_installLanguagePacks-parameter",
             "type": "PowerShell",
             "inline": [
-              "C:\\AVDImage\\installLanguagePacks.ps1 -LanguageList \"German (Germany)\""
+              "C:\\AVDImage\\installLanguagePacks.ps1 -LanguageList \"${var.img_language}\""
             ],
             "runAsSystem": true,
             "runElevated": true
