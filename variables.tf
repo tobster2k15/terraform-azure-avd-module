@@ -480,3 +480,15 @@ variable "sql_storage" {
   description = "The size of the SQL database."
   default     = 25
 }
+
+variable "sql_zone" {
+  type        = string
+  description = "The zone of the SQL database."
+  default     = "1"
+}
+
+variable "random_name" {
+  type        = bool
+  description = "The random name of the SQL database."
+  default     = false
+}

@@ -375,7 +375,7 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   administrator_password        = "Start123$"
   sku_name                      = var.sql_sku
   version                       = var.sql_version
-  zone                          = "1"
+  zone                          = var.sql_zone
   backup_retention_days         = 30
   geo_redundant_backup_enabled  = false
   tags                          = var.tags
@@ -420,7 +420,7 @@ resource "random_string" "random" {
 
 resource "azurerm_storage_account" "storage" {
   count                             = var.fslogix_enabled == true ? 1 : 0
-  name                              = var.st_name == null ? "${random_string.random[count.index].result}-st" : var.st_name
+  name                              = var.random_name == false ? local.st_name : "${lower(random_string.random[count.index].result)}-st"
   resource_group_name               = azurerm_resource_group.myrg_shd[count.index].name
   location                          = azurerm_resource_group.myrg_shd[count.index].location
   min_tls_version                   = "TLS1_2"
@@ -476,7 +476,7 @@ resource "azurerm_private_dns_zone" "dnszone_st" {
 
 resource "azurerm_private_dns_a_record" "dnszone_st" {
   count               = var.fslogix_enabled == true ? 1 : 0
-  name                = var.st_name == null ? "${random_string.random[count.index].result}-st" : "${var.st_name}.file.core.windows.net"
+  name                = var.random_name == false ? "${local.st_name}.file.core.windows.net" : "${lower(random_string.random[count.index].result)}-st.file.core.windows.net"
   zone_name           = azurerm_private_dns_zone.dnszone_st[count.index].name
   resource_group_name = var.vnet_rg
   ttl                 = 300
