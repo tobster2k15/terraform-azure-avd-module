@@ -420,7 +420,7 @@ resource "random_string" "random" {
 
 resource "azurerm_storage_account" "storage" {
   count                             = var.fslogix_enabled == true ? 1 : 0
-  name                              = var.st_name == null ? "${random_string.random.result}-st" : var.st_name
+  name                              = var.st_name == null ? "${random_string.random[count.index].result}-st" : var.st_name
   resource_group_name               = azurerm_resource_group.myrg_shd[count.index].name
   location                          = azurerm_resource_group.myrg_shd[count.index].location
   min_tls_version                   = "TLS1_2"
