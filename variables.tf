@@ -492,3 +492,9 @@ variable "random_name" {
   description = "The random name of the SQL database."
   default     = false
 }
+
+variable "additional_shares" {
+  type        = number
+  description = "The additional shares."
+  default     = 0
+}

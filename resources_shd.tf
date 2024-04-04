@@ -398,8 +398,8 @@ resource "azurerm_mysql_flexible_database" "mysqldb_prd" {
 resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
   count               = var.sql_enabled == true ? var.db_count_archive : 0
   name                = "${local.sql_db_archive}-${format("%03d", count.index + 1)}"
-  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
-  server_name         = azurerm_mysql_flexible_server.mysql[count.index].name
+  resource_group_name = element(azurerm_resource_group.myrg_shd[*].name, count.index)
+  server_name         = element(azurerm_mysql_flexible_server.mysql[*].name, count.index)
   charset             = var.sql_charset
   collation           = var.sql_collation
 }
@@ -446,6 +446,18 @@ resource "azurerm_storage_share" "FSShare" {
 
 
   storage_account_name = azurerm_storage_account.storage[count.index].name
+  depends_on           = [azurerm_storage_account.storage]
+  lifecycle { 
+    ignore_changes = [name, quota, enabled_protocol] 
+    }
+}
+
+resource "azurerm_storage_share" "additional_shares" {
+  count            = var.fslogix_enabled == true ? var.additional_shares : 0
+  name             = "share${format("%03d", count.index + 1)}"
+  quota            = var.share_size
+  enabled_protocol = "SMB"
+  storage_account_name = element(azurerm_storage_account.storage[*].name, count.index)
   depends_on           = [azurerm_storage_account.storage]
   lifecycle { 
     ignore_changes = [name, quota, enabled_protocol] 
