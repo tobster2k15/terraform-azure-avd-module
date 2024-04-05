@@ -280,7 +280,7 @@ resource "azurerm_role_definition" "roledef" {
 resource "azurerm_role_assignment" "scaling_plan_role" {
   count                            = var.scaling_plan_enabled == true ? 1 : 0
   name                             = random_uuid.random[count.index].result
-  scope                            = azurerm_resource_group.myrg[count.index].id
+  scope                            = element(azurerm_resource_group.myrg[*].id, count.index)
   role_definition_id               = azurerm_role_definition.roledef[count.index].role_definition_resource_id
   principal_id                     = data.azuread_service_principal.principal.id
   skip_service_principal_aad_check = true
