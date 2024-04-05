@@ -27,7 +27,7 @@ data "azurerm_client_config" "current" {}
 data "azurerm_subscription" "current" {}
 
 data "template_file" "st_join" {
-    template = "${file("${path.root}/st_join.ps1")}"
+    template = "${file("${path.root}/scripts/st_join.ps1")}"
     vars = {
         
         ClientId                = "${var.ARM_CLIENT_ID}"
