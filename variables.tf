@@ -47,6 +47,11 @@ variable "application_map" {
   default     = null
 }
 
+variable "ARM_SUBSCRIPTION_ID" {
+  type        = string
+  description = "Subscription ID"
+  default     = null
+}
 
 variable "desktop_assignment_type" {
   type        = string
