@@ -39,3 +39,18 @@ output "timezone" {
   description = "The timezone selected for this pool"
   value       = var.timezone
 }
+
+output "myrg" {
+  description = "Resource Group Name"
+  value       = azurerm_resource_group.myrg.name
+}
+
+output "myrg_location" {
+  description = "Resource Group Location"
+  value       = azurerm_resource_group.myrg.location
+}
+
+output "hostpool" {
+  description = "Hostpool Name"
+  value       = azurerm_virtual_desktop_host_pool.pool.name
+}
