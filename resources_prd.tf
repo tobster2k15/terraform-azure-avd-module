@@ -226,7 +226,7 @@ PROTECTED_SETTINGS
 resource "azurerm_virtual_machine_extension" "join_storageaccount" {
   count                = var.fslogix_enabled == true ? 1 : 0  
   name                 = "join_storageaccount"
-  virtual_machine_id   = azurerm_windows_virtual_machine.myvm[count.index].id
+  virtual_machine_id   = azurerm_windows_virtual_machine.vm[count.index].id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
   type_handler_version = "1.9"
@@ -237,7 +237,7 @@ resource "azurerm_virtual_machine_extension" "join_storageaccount" {
   }
   SETTINGS
   
-  depends_on           = [azurerm_virtual_machine_extension.join-domain_dev]
+  depends_on           = [azurerm_virtual_machine_extension.domain_join_ext]
   
 }
 
