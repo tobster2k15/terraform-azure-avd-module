@@ -52,5 +52,5 @@ output "myrg_location" {
 
 output "hostpool" {
   description = "Hostpool Name"
-  value       = azurerm_virtual_desktop_host_pool.pool.name
+  value       = azurerm_virtual_desktop_host_pool.pool.id
 }
