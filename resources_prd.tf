@@ -320,7 +320,7 @@ resource "azurerm_virtual_desktop_scaling_plan" "scaling" {
   }
   
   host_pool {
-    hostpool_id          = azurerm_virtual_desktop_host_pool.hostpool.id
+    hostpool_id          = azurerm_virtual_desktop_host_pool.pool.id
     scaling_plan_enabled = true
   }
 }
