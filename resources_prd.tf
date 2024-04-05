@@ -226,7 +226,7 @@ PROTECTED_SETTINGS
 resource "azurerm_virtual_machine_extension" "join_storageaccount" {
   count                = var.fslogix_enabled == true ? 1 : 0  
   name                 = "join_storageaccount"
-  virtual_machine_id   = azurerm_windows_virtual_machine.vm[count.index].id
+  virtual_machine_id   = element(azurerm_windows_virtual_machine.vm[*].id, count.index)
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
   type_handler_version = "1.9"
@@ -248,7 +248,7 @@ resource "random_uuid" "random" {
 resource "azurerm_role_definition" "roledef" {
   count       = var.scaling_plan_enabled == true ? 1 : 0
   name        = "AVD-AutoScale"
-  scope       = azurerm_resource_group.myrg[count.index].id
+  scope       = element(azurerm_resource_group.myrg_shd[*].name, count.index)
   description = "AVD AutoScale for ${var.usecase}"
   permissions {
     actions = ["Microsoft.Compute/virtualMachines/start/action",
