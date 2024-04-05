@@ -45,6 +45,7 @@ vdpool_name         =   "vdpool-${var.usecase}-${var.environment}-001"
 nic_name            =   "nic-${var.usecase}-${var.environment}" #${var.instance} #Resource Group for 
 vds_name            =   "vdscaling-${var.usecase}-${var.environment}-001"
 app_group_name      =   "vdpool-${var.usecase}-DAG"
+vdscaling_schedule  =   "vdpool-${var.usecase}-${var.environment}-schedule"
 #Network Naming
 rg_vnet_name        =   "rg-vnet-${var.usecase}-${var.environment}-${var.region}-001"
 vnet_name           =   "vnet-${var.usecase}-${var.environment}-${var.region}-001"
