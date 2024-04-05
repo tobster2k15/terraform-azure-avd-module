@@ -249,7 +249,7 @@ resource "azurerm_role_definition" "roledef" {
   count       = var.scaling_plan_enabled == true ? 1 : 0
   name        = "AVD-AutoScale"
   scope       = azurerm_resource_group.myrg[count.index].id
-  description = "AVD AutoScale for ${var.usecase_for_desc}"
+  description = "AVD AutoScale for ${var.usecase}"
   permissions {
     actions = ["Microsoft.Compute/virtualMachines/start/action",
       "Microsoft.Compute/virtualMachines/read",

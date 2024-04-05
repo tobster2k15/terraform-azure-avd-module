@@ -32,13 +32,13 @@ data "template_file" "st_join" {
         
         ClientId                = "${var.ARM_CLIENT_ID}"
         SubscriptionId          = "${var.ARM_SUBSCRIPTION_ID}"
-        ResourceGroupName       = "${azurerm_resource_group.myrg_shd[count.index].name}"
+        ResourceGroupName       = "${azurerm_resource_group.myrg_shd.name}"
         StorageAccountName      = "${local.st_name}"
         SamAccountName          = "${local.st_name}"
         DomainAccountType       = "ComputerAccount"
         IdentityServiceProvider = "ADDS"
         OUName                  = "${var.st_ou_path}"
         EncryptionType          = "AES256"
-        StorageAccountFqdn      = "${azurerm_private_dns_a_record.dnszone_st[count.index].name}"
+        StorageAccountFqdn      = "${azurerm_private_dns_a_record.dnszone_st.name}"
   }
 }

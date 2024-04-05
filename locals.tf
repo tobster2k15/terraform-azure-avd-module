@@ -19,7 +19,6 @@ locals {
 locals {
   extensions = {
     domain_join = var.domain != null ? var.vmcount : 0
-    # sql_db      = var.sql_db != null ? toset(var.sql_db) : 0
   }
 }
 # VM Size 
