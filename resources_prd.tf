@@ -248,7 +248,7 @@ resource "random_uuid" "random" {
 resource "azurerm_role_definition" "roledef" {
   count       = var.scaling_plan_enabled == true ? 1 : 0
   name        = "AVD-AutoScale"
-  scope       = var.ARM_SUBSCRIPTION_ID
+  scope       = data.azurerm_subscription.current.id
   description = "AVD AutoScale for ${var.usecase}"
   permissions {
     actions = ["Microsoft.Compute/virtualMachines/start/action",
