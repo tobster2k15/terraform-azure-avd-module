@@ -22,10 +22,7 @@ variable "pool_type" {
   description = "The pool type."
   default     = "Pooled"
 }
-variable "pool_number" {
-  type        = number
-  description = "The number of this pool. Use to avoid name collision."
-}
+
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
 ### Variables - Optional
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
