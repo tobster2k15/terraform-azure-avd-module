@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "myrg_shd" {
-  count    = var.fslogix_enabled == true || var.sql_enabled == true || var.img_builder_enabled == true ? 1 : 0
+  count    = var.fslogix_enabled == true || var.sql_enabled == true || var.img_builder_enabled == true || var.img_gallery_enabled == true ? 1 : 0
   name     = local.rg_name_shd
   location = var.location
   tags     = var.tags
@@ -548,7 +548,7 @@ resource "azurerm_shared_image_gallery" "img_gal" {
 resource "azurerm_shared_image" "image" {
   count               = var.img_gallery_enabled == true && var.img_builder_enabled == false ? 1 : 0 
   name                = local.img_version
-  gallery_name        = azurerm_shared_image_gallery.aib[count.index].name
+  gallery_name        = azurerm_shared_image_gallery.img_gal[count.index].name
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
   location            = azurerm_resource_group.myrg_shd[count.index].location
   os_type             = "Windows"
