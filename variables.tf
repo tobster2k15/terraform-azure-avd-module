@@ -509,3 +509,9 @@ variable "scaling_plan_enabled" {
   description = "Enable the scaling plan."
   default     = false
 }
+
+variable "img_gallery_enabled" {
+  type        = bool
+  description = "Enable the image gallery."
+  default     = false
+}

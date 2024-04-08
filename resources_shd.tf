@@ -536,3 +536,28 @@ resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
 
   lifecycle { ignore_changes = [tags] }
 }
+
+resource "azurerm_shared_image_gallery" "img_gal" {
+  count               = var.img_gallery_enabled == true && var.img_builder_enabled == false ? 1 : 0   
+  name                = local.img_gal_name
+  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
+  location            = azurerm_resource_group.myrg_shd[count.index].location
+  tags                = var.tags
+}
+
+resource "azurerm_shared_image" "image" {
+  count               = var.img_gallery_enabled == true && var.img_builder_enabled == false ? 1 : 0 
+  name                = local.img_version
+  gallery_name        = azurerm_shared_image_gallery.aib[count.index].name
+  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
+  location            = azurerm_resource_group.myrg_shd[count.index].location
+  os_type             = "Windows"
+  hyper_v_generation  = "V2"
+  tags                = var.tags
+
+  identifier {
+    publisher = var.publisher
+    offer     = var.offer
+    sku       = var.sku
+  }
+}
