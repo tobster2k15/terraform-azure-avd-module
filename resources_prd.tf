@@ -223,20 +223,20 @@ PROTECTED_SETTINGS
   }
 }
 
-resource "azurerm_virtual_machine_extension" "join_storageaccount" {
-  count                = var.fslogix_enabled == true && var.vmcount >= 1 ? 1 : 0  
-  name                 = "join_storageaccount"
-  virtual_machine_id   = element(azurerm_windows_virtual_machine.vm[*].id, count.index)
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.9"
+# resource "azurerm_virtual_machine_extension" "join_storageaccount" {
+#   count                = var.fslogix_enabled == true && var.vmcount >= 1 ? 1 : 0  
+#   name                 = "join_storageaccount"
+#   virtual_machine_id   = element(azurerm_windows_virtual_machine.vm[*].id, count.index)
+#   publisher            = "Microsoft.Compute"
+#   type                 = "CustomScriptExtension"
+#   type_handler_version = "1.9"
 
-  protected_settings   = <<SETTINGS
-  {    
-    "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.st_join.rendered)}')) | Out-File -filepath ${path.root}/scripts/st_join.ps1\" && powershell -ExecutionPolicy Unrestricted -File st_join.ps1 -ResourceGroupName ${data.template_file.st_join.vars.ResourceGroupName} -StorageAccountName ${data.template_file.st_join.vars.StorageAccountName} -OrganizationalUnitDistinguishedName ${data.template_file.st_join.vars.OUName} -ClientId ${data.template_file.st_join.vars.ClientId} -SubscriptionId ${data.template_file.st_join.vars.SubscriptionId} - $DomainAccountType ${data.template_file.st_join.vars.DomainAccountType} -IdentityServiceProvider ${data.template_file.st_join.vars.IdentityServiceProvider} -StorageAccountFqdn ${data.template_file.st_join.vars.StorageAccountFqdn} -SamAccountName ${data.template_file.st_join.vars.SamAccountName} -EncryptionType ${data.template_file.st_join.vars.EncryptionType}"
-  }
-  SETTINGS
+#   protected_settings   = <<SETTINGS
+#   {    
+#     "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.st_join.rendered)}')) | Out-File -filepath ${path.root}/scripts/st_join.ps1\" && powershell -ExecutionPolicy Unrestricted -File st_join.ps1 -ResourceGroupName ${data.template_file.st_join.vars.ResourceGroupName} -StorageAccountName ${data.template_file.st_join.vars.StorageAccountName} -OrganizationalUnitDistinguishedName ${data.template_file.st_join.vars.OUName} -ClientId ${data.template_file.st_join.vars.ClientId} -SubscriptionId ${data.template_file.st_join.vars.SubscriptionId} - $DomainAccountType ${data.template_file.st_join.vars.DomainAccountType} -IdentityServiceProvider ${data.template_file.st_join.vars.IdentityServiceProvider} -StorageAccountFqdn ${data.template_file.st_join.vars.StorageAccountFqdn} -SamAccountName ${data.template_file.st_join.vars.SamAccountName} -EncryptionType ${data.template_file.st_join.vars.EncryptionType}"
+#   }
+#   SETTINGS
   
-  depends_on           = [azurerm_virtual_machine_extension.domain_join_ext]
+#   depends_on           = [azurerm_virtual_machine_extension.domain_join_ext]
   
-}
+# }
