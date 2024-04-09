@@ -378,7 +378,7 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   resource_group_name           = azurerm_resource_group.myrg_shd[count.index].name
   location                      = azurerm_resource_group.myrg_shd[count.index].location
   administrator_login           = var.sql_admin
-  administrator_password        = var.sql_pass == null ? random_password.sql.result : var.sql_pass
+  administrator_password        = var.sql_pass == null ? random_password.sql[count.index].result : var.sql_pass
   sku_name                      = var.sql_sku
   version                       = var.sql_version
   zone                          = var.sql_zone
