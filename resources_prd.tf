@@ -1,14 +1,9 @@
-###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
-### Resources
-###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
 resource "azurerm_resource_group" "myrg" {
   name     = local.rg_name
   location = var.location
   tags     = var.tags
 }
-# The hostpool uses logic from var.pool_type to set the majority of the fields. 
-# Description and RDP properties are "changed" every deployment. Lifecycle block prevents this update. 
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_host_pool.html
+
 resource "azurerm_virtual_desktop_host_pool" "pool" {
   resource_group_name              = azurerm_resource_group.myrg.name
   location                         = azurerm_resource_group.myrg.location
@@ -38,14 +33,12 @@ resource "azurerm_virtual_desktop_host_pool" "pool" {
   }
   tags = var.tags
 }
-# The hostpools registration token. Used by the DSC extension/AVD agent to tie the virtual machine to the hostpool as a "Sessionhost."
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_host_pool_registration_info
+
 resource "azurerm_virtual_desktop_host_pool_registration_info" "token" {
   hostpool_id     = azurerm_virtual_desktop_host_pool.pool.id
   expiration_date = timeadd(timestamp(), "2h")
 }
-# Functionally, workspaces have a 1-to-1 relationship with the hostpool. The friendly_name field is surfaced to the end user.
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace
+
 resource "azurerm_virtual_desktop_workspace" "workspace" {
   name                = local.workspace
   location            = azurerm_resource_group.myrg.location
@@ -55,8 +48,6 @@ resource "azurerm_virtual_desktop_workspace" "workspace" {
   tags                = var.tags
 }
 
-# The application group. In this module it is limited to a single AAD group. You can use outputs to add additional groups from the root module.
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_application_group
 resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
   name                = local.app_group_name
   location            = azurerm_resource_group.myrg.location
@@ -67,23 +58,20 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
   description         = "Production Environment for ${var.usecase}"
   tags                = var.tags
 }
-# # The association object ties the application group(s) to the workspace.
-# # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_workspace_application_group_association
+
 resource "azurerm_virtual_desktop_workspace_application_group_association" "association" {
   for_each             = toset(local.aad_group_list)
   application_group_id = azurerm_virtual_desktop_application_group.applicationgroup.id
   workspace_id         = azurerm_virtual_desktop_workspace.workspace.id
 }
-# AAD group role and scope assignment.
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment
+
 resource "azurerm_role_assignment" "rbac" {
   for_each           = toset(var.avd_access)
   scope              = azurerm_virtual_desktop_application_group.applicationgroup.id
   role_definition_id = data.azurerm_role_definition.avduser_role.id
   principal_id       = data.azuread_group.avd_group_prd[each.value].id
 }
-# Applications for RAIL pools.
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_desktop_application
+
 resource "azurerm_virtual_desktop_application" "application" {
   for_each                     = local.applications
   name                         = replace(each.value["app_name"], " ", "")
@@ -102,8 +90,7 @@ resource "azurerm_virtual_desktop_application" "application" {
     ]
   }
 }
-# The virtual machine and disk.
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine.html
+
 resource "azurerm_windows_virtual_machine" "vm" {
   count                 = var.vmcount
   name                  = "${local.vm_name}-${format("%03d", count.index + 1)}"
@@ -143,8 +130,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
     ignore_changes = [identity]
   }
 }
-# The sessionhost's NIC.
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface
+
 resource "azurerm_network_interface" "nic" {
   count               = var.vmcount
   name                = "${local.nic_name}-${format("%03d", count.index + 1)}"
@@ -157,9 +143,7 @@ resource "azurerm_network_interface" "nic" {
   }
   tags = var.tags
 }
-# Required extension - the DSC installs all three agents and passes the registration token to the AVD agent.
-# As local.token is updated dynamically, the lifecycle block is used to prevent needless recreation of the resource.
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_extension.html
+
 resource "azurerm_virtual_machine_extension" "vm_dsc_ext" {
   count                      = var.vmcount
   name                       = "register-session-host-vmext"
@@ -193,9 +177,7 @@ PROTECTED_SETTINGS
     ]
   }
 }
-# Optional extension - only created if var.domain does not equal null.
-# The lifecycle block prevents recreation for the existing VMs ext. when credentials are updated.
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_extension.html
+
 resource "azurerm_virtual_machine_extension" "domain_join_ext" {
   count                      = local.extensions.domain_join
   name                       = "join-domain"

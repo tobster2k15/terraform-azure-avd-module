@@ -281,7 +281,7 @@ variable "usecase" {
 
 variable "usecase_for_vm" {
   type        = string
-  description = "The usecase of the pool."
+  description = "Used for VM naming. Please check if the complete name is >= 15 characters because of NetBIOS limitations."
   default     = "vdi"
 }
 
@@ -511,4 +511,28 @@ variable "img_gallery_enabled" {
   type        = bool
   description = "Enable the image gallery."
   default     = false
+}
+
+variable "os_type" {
+  type        = string
+  description = "OS type for Image Gallery."
+  default     = "Windows"
+}
+
+variable "hyper_v_generation" {
+  type        = string
+  description = "Hyper-V generation for Image Gallery."
+  default     = "V2"
+}
+
+variable "sql_admin" {
+  type        = string
+  description = "The admin of the SQL database."
+  default     = "sqladmin"
+}
+
+variable "sql_pass" {
+  type        = string
+  description = "The password of the SQL database."
+  default     = null
 }

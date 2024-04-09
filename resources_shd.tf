@@ -366,13 +366,19 @@ resource "azurerm_private_dns_a_record" "dnszone_sql" {
 }
 
 # ### SQL DB Server ### login and pw in tf cloud 
+resource "random_password" "sql" {
+  count = var.sql_enabled == true && var.sql_pass == null ? 1 : 0
+  length           = 16
+  special          = true
+}
+
 resource "azurerm_mysql_flexible_server" "mysql" {
   count                         = var.sql_enabled == true ? 1 : 0 
   name                          = local.sql_name
   resource_group_name           = azurerm_resource_group.myrg_shd[count.index].name
   location                      = azurerm_resource_group.myrg_shd[count.index].location
-  administrator_login           = "admin123"
-  administrator_password        = "Start123$"
+  administrator_login           = var.sql_admin
+  administrator_password        = var.sql_pass == null ? random_password.sql.result : var.sql_pass
   sku_name                      = var.sql_sku
   version                       = var.sql_version
   zone                          = var.sql_zone
@@ -408,9 +414,6 @@ resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
 ########################################  Storage Account ##################################################
 ############################################################################################################
 
-## Azure Storage Accounts requires a globally unique names
-## https://docs.microsoft.com/azure/storage/common/storage-account-overview
-## Create a File Storage Account 
 resource "random_string" "random" {
   count           = var.fslogix_enabled == true && var.random_name == true ? 1 : 0
   length           = 16
@@ -551,8 +554,8 @@ resource "azurerm_shared_image" "image" {
   gallery_name        = azurerm_shared_image_gallery.img_gal[count.index].name
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
   location            = azurerm_resource_group.myrg_shd[count.index].location
-  os_type             = "Windows"
-  hyper_v_generation  = "V2"
+  os_type             = var.os_type
+  hyper_v_generation  = var.hyper_v_generation
   tags                = var.tags
 
   identifier {
