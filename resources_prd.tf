@@ -54,7 +54,7 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
   resource_group_name = azurerm_resource_group.myrg.name
   type                = var.app_type != "RemoteApp" ? "Desktop" : "RemoteApp"
   host_pool_id        = azurerm_virtual_desktop_host_pool.pool.id
-  friendly_name       = "${var.usecase}"
+  friendly_name       = var.usecase_for_desc == null ? "${var.usecase}" : "${var.usecase_for_desc}"
   description         = "Production Environment for ${var.usecase}"
   tags                = var.tags
 }
@@ -79,7 +79,7 @@ resource "azurerm_virtual_desktop_application" "application" {
   description                  = "${each.value["app_name"]} application - created with Terraform."
   application_group_id         = azurerm_virtual_desktop_application_group.applicationgroup.id
   path                         = each.value["local_path"]
-  command_line_argument_policy = each.value["cmd_argument"] != null ? "DoNotAllow" : "Require"
+  command_line_argument_policy = each.value["cmd_argument"] == null ? "DoNotAllow" : "Require"
   command_line_arguments       = each.value["cmd_argument"]
   show_in_portal               = true
   icon_path                    = each.value["local_path"]

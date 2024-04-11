@@ -1,14 +1,3 @@
-# This local is used to create the workspace prefix.
-locals {
-  list = {
-    prod_workspace  = terraform.workspace == "default" ? "${var.environment}" : ""
-    dev_workspace   = terraform.workspace == "development" ? "dev" : ""
-    uat_workspace   = terraform.workspace == "uat" ? "UT" : ""
-    other_workspace = terraform.workspace != "default" && terraform.workspace != "development" && terraform.workspace != "uat" ? "TE" : ""
-  }
-  workspace_prefix = coalesce(local.list.prod_workspace, local.list.dev_workspace, local.list.uat_workspace, local.list.other_workspace)
-}
-
 # Locates unique AAD groups for application group for_each loop. 
 locals {
   aad_group_list = var.application_map != null ? distinct(flatten([for k, v in var.application_map : toset(v.avd_access)])) : [var.aad_group_desktop]
