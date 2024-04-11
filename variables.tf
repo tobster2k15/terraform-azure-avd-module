@@ -11,23 +11,10 @@ variable "region" {
   description = "The desired Azure region for the pool. See also var.region_prefix_map."
   validation {
     condition = anytrue([
-      lower(var.region) == "northcentralus",
-      lower(var.region) == "southcentralus",
-      lower(var.region) == "westcentral",
-      lower(var.region) == "centralus",
-      lower(var.region) == "westus",
-      lower(var.region) == "eastus",
-      lower(var.region) == "northeurope",
-      lower(var.region) == "westeurope",
-      lower(var.region) == "norwayeast",
-      lower(var.region) == "norwaywest",
-      lower(var.region) == "swedencentral",
-      lower(var.region) == "switzerlandnorth",
-      lower(var.region) == "uksouth",
-      lower(var.region) == "ukwest"
-
+      lower(var.region) == "ne",
+      lower(var.region) == "we"
     ])
-    error_message = "Please select one of the approved regions: northcentralus, southcentralus, westcentral, centralus, westus, eastus, northeurope, westeurope, norwayeast, norwaywest, swedencentral, switzerlandnorth, uksouth, or ukwest."
+    error_message = "Please select one of the approved regions:ne(northeurope) or we (westeurope)."
   }
 }
 variable "pool_type" {
@@ -296,12 +283,6 @@ variable "usecase_for_vm" {
   type        = string
   description = "Used for VM naming. Please check if the complete name is >= 15 characters because of NetBIOS limitations."
   default     = "vdi"
-}
-
-variable "usecase_for_desc" {
-  type        = string
-  description = "Used for Application Group to make it look nicer."
-  default     = null
 }
 
 variable "subnet_id_shd" {
