@@ -285,6 +285,12 @@ variable "usecase_for_vm" {
   default     = "vdi"
 }
 
+variable "usecase_for_desc" {
+  type        = string
+  description = "Used for Application Group to make it look prettier."
+  default     = null
+}
+
 variable "subnet_id_shd" {
   type        = string
   description = "The ID of the subnet."
