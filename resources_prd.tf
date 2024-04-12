@@ -100,12 +100,13 @@ resource "azurerm_windows_virtual_machine" "vm" {
   network_interface_ids = ["${azurerm_network_interface.nic.*.id[count.index]}"]
   provision_vm_agent    = true
   secure_boot_enabled   = var.secure_boot
+  vtpm_enabled          = var.vtpm
   admin_username        = var.local_admin
   admin_password        = var.local_pass
   os_disk {
     name                 = "${local.osd_name}${format("%03d", count.index + 1)}"
     caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
+    storage_account_type = var.os_disk_type
   }
   source_image_id = var.managed_image_id
   dynamic "source_image_reference" {

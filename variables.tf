@@ -542,3 +542,15 @@ variable "sql_pass" {
   description = "The password of the SQL database."
   default     = null
 }
+
+variable "vtpm" {
+  type        = bool
+  description = "Controls the virtual TPM settings for the sessionhost VMs."
+  default     = true
+}
+
+variable "os_disk_type" {
+  type        = string
+  description = "The type of the OS disk."
+  default     = "Standard_LRS"
+}
