@@ -54,3 +54,8 @@ output "hostpool" {
   description = "Hostpool ID"
   value       = azurerm_virtual_desktop_host_pool.pool.id
 }
+
+output "vm_id" {
+  description = "VM ID"
+  value       = azurerm_virtual_machine.vm[*].id
+}
