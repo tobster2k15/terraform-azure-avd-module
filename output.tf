@@ -59,3 +59,8 @@ output "vm_id" {
   description = "VM ID"
   value       = azurerm_windows_virtual_machine.vm[*].id
 }
+
+output "myrg_shd" {
+  description = "Resource Group Name"
+  value       = azurerm_resource_group.myrg_shd.name
+}
