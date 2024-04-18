@@ -66,5 +66,5 @@ output "myrg_shd" {
 }
 output "st_name" {
   description = "Storage Account Name"
-  value       = azurerm_storage_account.st[count.index].name
+  value       = azurerm_storage_account.storage[count.index].name
 }
