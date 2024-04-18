@@ -62,9 +62,9 @@ output "vm_id" {
 
 output "myrg_shd" {
   description = "Resource Group Name"
-  value       = azurerm_resource_group.myrg_shd[*].name
+  value       = element(azurerm_resource_group.myrg_shd[*].name, count.index)
 }
 output "st_name" {
   description = "Storage Account Name"
-  value       = azurerm_storage_account.storage[*].name
+  value       = element(azurerm_storage_account.storage[*].name, count.index)
 }
