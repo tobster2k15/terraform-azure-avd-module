@@ -57,5 +57,5 @@ output "hostpool" {
 
 output "vm_id" {
   description = "VM ID"
-  value       = azurerm_virtual_machine.vm[*].id
+  value       = azurerm_virtual_machine.vm.id
 }
