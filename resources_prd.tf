@@ -40,10 +40,10 @@ resource "azurerm_virtual_desktop_host_pool_registration_info" "token" {
 }
 
 resource "azurerm_virtual_desktop_workspace" "workspace" {
-  name                = var.usecase_for_desc == true ? "${var.usecase_for_dev}  ${var.environment}" : local.workspace
+  name                = local.workspace
   location            = azurerm_resource_group.myrg.location
   resource_group_name = azurerm_resource_group.myrg.name
-  friendly_name       = var.usecase
+  friendly_name       = var.usecase_for_desc == true ? "${var.usecase_for_dev}  ${var.environment}" : var.usecase
   description         = "Workspace for ${var.usecase}"
   tags                = var.tags
 }
