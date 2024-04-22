@@ -439,6 +439,7 @@ resource "azurerm_storage_account" "storage" {
   identity {
     type = "SystemAssigned"
   }
+  ignore_changes = [azure_files_authentication]
 }
 
 resource "azurerm_storage_share" "FSShare" {
