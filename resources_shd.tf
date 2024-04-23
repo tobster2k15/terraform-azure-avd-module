@@ -414,13 +414,6 @@ resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
 ########################################  Storage Account ##################################################
 ############################################################################################################
 
-resource "random_string" "random" {
-  count           = var.fslogix_enabled == true && var.random_name == true ? 1 : 0
-  length           = 16
-  lower            = true
-  special          = false
-}
-
 resource "azurerm_storage_account" "storage" {
   count                             = var.fslogix_enabled == true ? 1 : 0
   name                              = var.st_name == null ? local.st_name : var.st_name #"${lower(random_string.random.result)}-st"
@@ -439,6 +432,7 @@ resource "azurerm_storage_account" "storage" {
   identity {
     type = "SystemAssigned"
   }
+  ## lifecylce block needed for if your storage account already is domain joined ##
   lifecycle {
     ignore_changes = [azure_files_authentication]
   }
