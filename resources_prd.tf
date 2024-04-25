@@ -125,7 +125,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
     azurerm_network_interface.nic
   ]
   tags = merge(var.tags, {
-    Automation = "OU check - AVD"
+    Automation = "AVD - Terraform Automation"
   })
   lifecycle {
     ignore_changes = [identity]
