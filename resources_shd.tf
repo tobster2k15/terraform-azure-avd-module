@@ -488,7 +488,7 @@ resource "azurerm_private_dns_zone" "dnszone_st" {
 
 resource "azurerm_private_dns_a_record" "dnszone_st" {
   count               = var.fslogix_enabled == true ? 1 : 0
-  name                = var.random_name == false ? "${local.st_name}.file.core.windows.net" : "${lower(random_string.random[count.index].result)}-st.file.core.windows.net"
+  name                = var.st_name == false ? "${local.st_name}.file.core.windows.net" : "${var.st_name}.file.core.windows.net"
   zone_name           = azurerm_private_dns_zone.dnszone_st[count.index].name
   resource_group_name = var.vnet_rg
   ttl                 = 300
