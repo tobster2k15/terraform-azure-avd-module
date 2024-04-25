@@ -103,6 +103,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
   vtpm_enabled          = var.vtpm
   admin_username        = var.local_admin
   admin_password        = var.local_pass
+  license_type          = var.license_type
   os_disk {
     name                 = "${local.osd_name}${format("%03d", count.index + 1)}"
     caching              = "ReadWrite"
@@ -170,7 +171,8 @@ SETTINGS
   }
 PROTECTED_SETTINGS
   depends_on = [
-    azurerm_virtual_desktop_host_pool.pool
+    azurerm_virtual_desktop_host_pool.pool,
+    azurerm_virtual_machine_extension.domain_join_ext[count.index]
   ]
   lifecycle {
     ignore_changes = [

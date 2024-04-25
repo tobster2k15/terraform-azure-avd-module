@@ -135,7 +135,7 @@ variable "vmcount" {
 variable "secure_boot" {
   type        = bool
   description = "Controls the trusted launch settings for the sessionhost VMs."
-  default     = false
+  default     = true
 }
 # To-do 
 variable "market_place_image" {
@@ -540,11 +540,17 @@ variable "sql_pass" {
 variable "vtpm" {
   type        = bool
   description = "Controls the virtual TPM settings for the sessionhost VMs."
-  default     = false
+  default     = true
 }
 
 variable "os_disk_type" {
   type        = string
   description = "The type of the OS disk."
   default     = "Standard_LRS"
+}
+
+variable "license_type" {
+  type        = string
+  description = "The license type of the OS. Options are: Windows_Client and Windows_Server"
+  default     = null
 }
