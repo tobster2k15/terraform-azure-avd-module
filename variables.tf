@@ -135,7 +135,7 @@ variable "vmcount" {
 variable "secure_boot" {
   type        = bool
   description = "Controls the trusted launch settings for the sessionhost VMs."
-  default     = true
+  default     = false
 }
 # To-do 
 variable "market_place_image" {
@@ -540,7 +540,7 @@ variable "sql_pass" {
 variable "vtpm" {
   type        = bool
   description = "Controls the virtual TPM settings for the sessionhost VMs."
-  default     = true
+  default     = false
 }
 
 variable "os_disk_type" {
