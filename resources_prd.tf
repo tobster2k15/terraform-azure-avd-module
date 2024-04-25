@@ -171,8 +171,7 @@ SETTINGS
   }
 PROTECTED_SETTINGS
   depends_on = [
-    azurerm_virtual_desktop_host_pool.pool,
-    azurerm_virtual_machine_extension.domain_join_ext[count.index]
+    azurerm_virtual_desktop_host_pool.pool
   ]
   lifecycle {
     ignore_changes = [
