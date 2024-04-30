@@ -37,6 +37,7 @@ variable "application_map" {
   type = map(object({
     app_name     = string
     local_path   = string
+    icon_path    = string
     cmd_argument = string
     avd_access   = list(string)
   }))
@@ -552,5 +553,11 @@ variable "os_disk_type" {
 variable "license_type" {
   type        = string
   description = "The license type of the OS. Options are: Windows_Client and Windows_Server"
+  default     = null
+}
+
+variable "icon_path" {
+  type        = string
+  description = "The path of the icon."
   default     = null
 }
