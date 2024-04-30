@@ -82,7 +82,7 @@ resource "azurerm_virtual_desktop_application" "application" {
   command_line_argument_policy = each.value["cmd_argument"] == null ? "DoNotAllow" : "Require"
   command_line_arguments       = each.value["cmd_argument"]
   show_in_portal               = true
-  icon_path                    = each.value["local_path"]
+  icon_path                    = each.value["icon_path"]
   icon_index                   = 1
   lifecycle {
     ignore_changes = [
