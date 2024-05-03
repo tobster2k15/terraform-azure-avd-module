@@ -176,6 +176,7 @@ PROTECTED_SETTINGS
   lifecycle {
     ignore_changes = [
       protected_settings,
+      tags
     ]
   }
 }
@@ -203,7 +204,7 @@ SETTINGS
     }
 PROTECTED_SETTINGS
   lifecycle {
-    ignore_changes = [settings, protected_settings]
+    ignore_changes = [settings, protected_settings, tags]
   }
 }
 
