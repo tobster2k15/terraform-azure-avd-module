@@ -17,14 +17,14 @@ resource "azurerm_virtual_desktop_host_pool" "pool" {
   personal_desktop_assignment_type = var.pool_type == "Desktop" ? var.desktop_assignment_type : null
   start_vm_on_connect              = var.start_on_connect
   load_balancer_type               = var.load_balancer_type
-  scheduled_agent_updates {
-    timezone = var.timezone
-    enabled  = true
-    schedule {
-      day_of_week = "Saturday"
-      hour_of_day = 2
-    }
-  }
+  # scheduled_agent_updates {
+  #   timezone = var.timezone
+  #   enabled  = true
+  #   schedule {
+  #     day_of_week = "Saturday"
+  #     hour_of_day = 2
+  #   }
+  # }
   lifecycle {
     ignore_changes = [
       description,
