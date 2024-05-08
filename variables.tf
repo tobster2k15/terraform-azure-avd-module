@@ -561,3 +561,9 @@ variable "icon_path" {
   description = "The path of the icon."
   default     = null
 }
+
+variable "patch_assessment_mode" {
+  type        = string
+  description = "The patch assessment mode."
+  default     = "ImageDefault"
+}

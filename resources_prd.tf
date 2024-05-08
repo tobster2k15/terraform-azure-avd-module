@@ -103,6 +103,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
   vtpm_enabled          = var.vtpm
   admin_username        = var.local_admin
   admin_password        = var.local_pass
+  patch_assessment_mode = var.patch_assessment_mode
   license_type          = var.license_type
   os_disk {
     name                 = "${local.osd_name}${format("%03d", count.index + 1)}"
