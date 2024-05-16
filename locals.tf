@@ -39,22 +39,14 @@ rg_vnet_name        =   "rg-vnet-${var.usecase}-${var.environment}-${var.region}
 vnet_name           =   "vnet-${var.usecase}-${var.environment}-${var.region}-001"
 snet_name           =   "snet-${var.usecase}-${var.environment}-001"
 snet_name_dev       =   "snet-${var.usecase}-${var.environment}-001"
-snet_name_shd       =   "snet-${var.usecase}-shd-"
+snet_name_shd       =   "snet-${var.usecase}-shd-001"
 nsg_name            =   "nsg-${var.usecase}-${var.environment}-${var.region}-001"
 pip_name            =   "pip-${var.usecase}-${var.environment}-001" #${var.instance}
 pep_name            =   "pep-${var.usecase}-shd-${var.region}"
 psc_name            =   "psc-${var.usecase}-${var.environment}-${var.region}"
-#DEV Naming
-rg_name_dev         =   "rg-${var.usecase}-${var.environment}-001"
-vm_name_dev         =   "vm${var.usecase_for_vm}${var.environment}-001" 
-ipc_name_dev        =   "ipc-nic-dev" 
-osd_name_dev        =   "osdisk${local.vm_name_dev}001"
-vdpool_name_dev     =   "vdpool-${var.usecase}-${var.environment}-001"
-nic_name_dev        =   "nic-${var.usecase}-dev"
-app_group_name_dev  =   "vdpool-${var.usecase}-${var.environment}-DAG"
+
 #SHD Naming
 workspace           =   "vdws-${var.usecase}-${var.environment}-001"
-workspace_dev       =   "vdws-${var.usecase}-${var.environment}-001"
 rg_name_shd         =   "rg-${var.usecase}-shd-001"
 st_name             =   "st${var.usecase}vdi${var.environment}001"
 st_share_name       =   "share${var.usecase}fslogix01"
