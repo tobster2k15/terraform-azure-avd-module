@@ -357,7 +357,7 @@ resource "azurerm_private_endpoint" "endpoint_sql" {
 
 resource "azurerm_private_dns_a_record" "dnszone_sql" {
   count               = var.sql_enabled == true ? 1 : 0
-  name                = "${local.sql_name}.mysql.database.azure.com"
+  name                = "${local.sql_name}"
   zone_name           = azurerm_private_dns_zone.mydnszone_sql[count.index].name
   resource_group_name = var.vnet_rg
   ttl                 = 300
