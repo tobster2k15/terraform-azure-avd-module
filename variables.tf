@@ -567,3 +567,9 @@ variable "patch_assessment_mode" {
   description = "The patch assessment mode."
   default     = "ImageDefault"
 }
+
+variable "preferred_app_group_type" {
+  type        = string
+  description = "The preferred application group type."
+  default     = "None"
+}

@@ -13,6 +13,7 @@ resource "azurerm_virtual_desktop_host_pool" "pool" {
   custom_rdp_properties            = var.rdp_properties
   description                      = "Hostpool für ${var.usecase}."
   type                             = var.pool_type != "Personal" ? "Pooled" : null
+  preferred_app_group_type         = var.preferred_app_group_type
   maximum_sessions_allowed         = var.maximum_sessions_allowed
   personal_desktop_assignment_type = var.pool_type == "Desktop" ? var.desktop_assignment_type : null
   start_vm_on_connect              = var.start_on_connect
