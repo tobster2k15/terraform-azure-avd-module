@@ -8,10 +8,9 @@ resource "azurerm_virtual_desktop_host_pool" "pool" {
   resource_group_name              = azurerm_resource_group.myrg.name
   location                         = azurerm_resource_group.myrg.location
   name                             = local.vdpool_name
-  friendly_name                    = "Production Hostpool"
-  validate_environment             = var.validate_environment
+  friendly_name                    = var.usecase_for_desc != null ? "Hostpool for ${var.usecase_for_desc}." : "Hostpool."
   custom_rdp_properties            = var.rdp_properties
-  description                      = "Hostpool für ${var.usecase}."
+  description                      = var.usecase_for_desc != null ? "Hostpool for ${var.usecase_for_desc}." : "Hostpool for ${var.usecase}."
   type                             = var.pool_type != "Personal" ? "Pooled" : null
   preferred_app_group_type         = var.preferred_app_group_type
   maximum_sessions_allowed         = var.maximum_sessions_allowed

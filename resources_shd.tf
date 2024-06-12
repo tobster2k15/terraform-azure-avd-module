@@ -521,7 +521,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
   count                           = var.fslogix_enabled == true ? 1 : 0
   storage_account_id              = azurerm_storage_account.storage[count.index].id
   default_action                  = "Deny"
-  bypass                          = ["AzureServices", "Metrics", "Logging"]
+  bypass                          = ["AzureServices"]
   depends_on                      = [azurerm_storage_share.FSShare,
     azurerm_private_endpoint.endpoint_st
   ]
