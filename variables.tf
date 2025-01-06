@@ -179,6 +179,7 @@ variable "domain_user" {
   type        = string
   description = "The identity that will join the VM to the domain. Omit the domain name itself."
   default     = null
+  sensitive   = true
 }
 variable "domain_pass" {
   type        = string
@@ -572,4 +573,10 @@ variable "preferred_app_group_type" {
   type        = string
   description = "The preferred application group type."
   default     = "Desktop"
+}
+
+variable "identity_provider" {
+  type        = string
+  description = "Identity Provider for Storage Account Domain Join"
+  default     = "ADDS"
 }
