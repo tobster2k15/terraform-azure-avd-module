@@ -290,29 +290,29 @@ TEMPLATE
   ]
 }
 
-resource "null_resource" "install_az_cli" {
-  count     = var.img_builder_enabled == true ? 1 : 0
-  provisioner "local-exec" {
-    command = <<EOF
-      . /etc/lsb-release
-      wget https://packages.microsoft.com/repos/azure-cli/pool/main/a/azure-cli/azure-cli_2.36.0-1~$${DISTRIB_CODENAME}_all.deb
-      mkdir ./env && dpkg -x *.deb ./env
-      ./env/usr/bin/az login --service-principal -u "${var.ARM_CLIENT_ID}" -p "${var.ARM_CLIENT_SECRET}" -t "${var.ARM_TENANT_ID}"
-      ./env/usr/bin/az account show
-    EOF
-  }
-  provisioner "local-exec" {
-    command = <<EOF
-    ./env/usr/bin/az resource invoke-action --resource-group ${azurerm_resource_group.myrg_shd[count.index].name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
-    EOF
-  }
-  depends_on = [
-    azurerm_resource_group_template_deployment.aib,
-  ]
-  triggers = {
-    always_run = uuid()
-  }
-}
+# resource "null_resource" "install_az_cli" {
+#   count     = var.img_builder_enabled == true ? 1 : 0
+#   provisioner "local-exec" {
+#     command = <<EOF
+#       . /etc/lsb-release
+#       wget https://packages.microsoft.com/repos/azure-cli/pool/main/a/azure-cli/azure-cli_2.36.0-1~$${DISTRIB_CODENAME}_all.deb
+#       mkdir ./env && dpkg -x *.deb ./env
+#       ./env/usr/bin/az login --service-principal -u "${var.ARM_CLIENT_ID}" -p "${var.ARM_CLIENT_SECRET}" -t "${var.ARM_TENANT_ID}"
+#       ./env/usr/bin/az account show
+#     EOF
+#   }
+#   provisioner "local-exec" {
+#     command = <<EOF
+#     ./env/usr/bin/az resource invoke-action --resource-group ${azurerm_resource_group.myrg_shd[count.index].name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
+#     EOF
+#   }
+#   depends_on = [
+#     azurerm_resource_group_template_deployment.aib,
+#   ]
+#   triggers = {
+#     always_run = uuid()
+#   }
+# }
 
 ############################################################################################################
 ############################################### SQL DB #####################################################

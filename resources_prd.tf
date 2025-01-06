@@ -93,7 +93,7 @@ resource "azurerm_virtual_desktop_application" "application" {
 
 resource "azurerm_windows_virtual_machine" "vm" {
   count                 = var.vmcount
-  name                  = "${local.vm_name}-${count.index + 1)}"
+  name                  = "${local.vm_name}-${count.index + 1}"
   resource_group_name   = azurerm_resource_group.myrg.name
   location              = azurerm_resource_group.myrg.location
   size                  = var.vmsize
