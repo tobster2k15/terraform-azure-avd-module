@@ -60,7 +60,7 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
 }
 
 resource "azurerm_virtual_desktop_workspace_application_group_association" "association" {
-  for_each             = toset(local.aad_group_list)
+  for_each             = toset(var.avd_access)
   application_group_id = azurerm_virtual_desktop_application_group.applicationgroup.id
   workspace_id         = azurerm_virtual_desktop_workspace.workspace.id
 }
