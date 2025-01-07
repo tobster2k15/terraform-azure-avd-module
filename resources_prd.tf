@@ -43,7 +43,7 @@ resource "azurerm_virtual_desktop_workspace" "workspace" {
   name                = local.workspace
   location            = azurerm_resource_group.myrg.location
   resource_group_name = azurerm_resource_group.myrg.name
-  friendly_name       = var.usecase_for_desc != null ? "${var.usecase_for_desc}" : ""
+  friendly_name       = var.usecase_for_desc != null ? "${var.usecase_for_desc}" : "Friendly name for ${var.usecase}"
   description         = "Workspace for ${var.usecase}"
   tags                = var.tags
 }
@@ -54,7 +54,7 @@ resource "azurerm_virtual_desktop_application_group" "applicationgroup" {
   resource_group_name = azurerm_resource_group.myrg.name
   type                = var.app_type != "RemoteApp" ? "Desktop" : "RemoteApp"
   host_pool_id        = azurerm_virtual_desktop_host_pool.pool.id
-  friendly_name       = var.usecase_for_desc != null ? "${var.usecase_for_desc}" : ""
+  friendly_name       = var.usecase_for_desc != null ? "${var.usecase_for_desc}" : "Friendly name for ${var.usecase}"
   description         = "Production Environment for ${var.usecase}"
   tags                = var.tags
 }
