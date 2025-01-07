@@ -4,7 +4,7 @@
 variable "rg" {
   type        = string
   description = "Name of the resource group."
-  default     = null 
+  default     = null
 }
 variable "region" {
   type        = string
@@ -114,8 +114,8 @@ variable "region_prefix_map" {
   type        = map(any)
   description = "A list of prefix strings to concat in locals. Can be replaced or appended."
   default = {
-    westeurope       = "we"
-    northeurope      = "ne"
+    westeurope  = "we"
+    northeurope = "ne"
   }
 }
 ###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###>-<###
@@ -215,19 +215,13 @@ variable "ou_dev" {
   description = "The OU a VM should be placed within."
   default     = "" # Currently does not work, needs blank string to create VMs.
 }
-variable "start_on_connect"{
+variable "start_on_connect" {
   type        = bool
   description = "Start the VM when a user connects."
   default     = true
 }
 
-variable "fslogix_enabled"{
-  type        = bool
-  description = "Enable FSLogix for the pool."
-  default     = false
-}
-
-variable "vnet_rg"{
+variable "vnet_rg" {
   type        = string
   description = "The resource group of the virtual network."
   nullable    = false
@@ -245,25 +239,25 @@ variable "vnet_id" {
   nullable    = false
 }
 
-variable "location"{ 
+variable "location" {
   type        = string
   description = "The location of the virtual network."
   default     = "westeurope"
 }
 
-variable "st_account_kind"{ 
+variable "st_account_kind" {
   type        = string
   description = "The kind of storage account."
   default     = "FileStorage"
 }
 
-variable "st_account_tier"{ 
+variable "st_account_tier" {
   type        = string
   description = "The tier of the storage account."
   default     = "Premium"
 }
 
-variable "st_replication"{ 
+variable "st_replication" {
   type        = string
   description = "The replication of the storage account."
   default     = "LRS"
@@ -305,7 +299,7 @@ variable "subnet_id" {
   default     = null
 }
 
-variable "resource_group_name"{
+variable "resource_group_name" {
   type        = string
   description = "The name of the resource group."
   default     = null
@@ -324,13 +318,13 @@ variable "rg_name_shd" {
 }
 
 variable "st_access_prd" {
-  type = string
+  type        = string
   description = "The access tier of the storage account."
   default     = null
 }
 
 variable "st_access_dev" {
-  type = string
+  type        = string
   description = "The access tier of the storage account."
   default     = null
 }
@@ -371,7 +365,7 @@ variable "app_type" {
   default     = "RemoteApp"
 }
 
-variable "img_language"{
+variable "img_language" {
   type        = string
   description = "The language of the image."
   default     = "English (United States)"
@@ -383,19 +377,19 @@ variable "aib_api_version" {
   default     = "2022-07-01"
 }
 
-variable "ARM_CLIENT_ID"{
+variable "ARM_CLIENT_ID" {
   type        = string
   description = "Client ID"
   default     = null
 }
 
-variable "ARM_TENANT_ID"{
+variable "ARM_TENANT_ID" {
   type        = string
   description = "Tenant ID"
   default     = null
 }
 
-variable "ARM_CLIENT_SECRET"{
+variable "ARM_CLIENT_SECRET" {
   type        = string
   description = "Client Secret"
   default     = null
@@ -413,13 +407,13 @@ variable "sql_db" {
   default     = null
 }
 
-variable "subnet_id_dev"{ 
+variable "subnet_id_dev" {
   type        = string
   description = "The ID of the subnet."
   default     = null
 }
 
-variable "vmsize_dev"{
+variable "vmsize_dev" {
   type        = string
   description = "The VM SKU desired for the pool. If none are selected, VMSize will be chosen based on var.pool_type."
   default     = "Standard_D2as_v4"

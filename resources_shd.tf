@@ -9,7 +9,7 @@ resource "azurerm_resource_group" "myrg_shd" {
 ##########################################  Image Builder ##################################################
 ############################################################################################################
 
- resource "azurerm_user_assigned_identity" "aib" {
+resource "azurerm_user_assigned_identity" "aib" {
   count               = var.img_builder_enabled == true ? 1 : 0
   name                = local.managed_id_name
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
@@ -18,7 +18,7 @@ resource "azurerm_resource_group" "myrg_shd" {
 }
 
 resource "azurerm_role_definition" "aib" {
-  count       = var.img_builder_enabled == true ? 1 : 0   
+  count       = var.img_builder_enabled == true ? 1 : 0
   name        = local.rbac_name
   scope       = data.azurerm_subscription.current.id
   description = "Azure Image Builder AVD"
@@ -61,20 +61,20 @@ resource "azurerm_role_definition" "aib" {
 }
 
 resource "azurerm_role_assignment" "aib" {
-  count              = var.img_builder_enabled == true ? 1 : 0   
+  count              = var.img_builder_enabled == true ? 1 : 0
   scope              = azurerm_resource_group.myrg_shd[count.index].id
   role_definition_id = azurerm_role_definition.aib[count.index].role_definition_resource_id
   principal_id       = azurerm_user_assigned_identity.aib[count.index].principal_id
 }
 
 resource "time_sleep" "aib" {
-  count           = var.img_builder_enabled == true ? 1 : 0   
+  count           = var.img_builder_enabled == true ? 1 : 0
   depends_on      = [azurerm_role_assignment.aib]
   create_duration = "60s"
 }
 
 resource "azurerm_shared_image_gallery" "aib" {
-  count               = var.img_builder_enabled == true ? 1 : 0   
+  count               = var.img_builder_enabled == true ? 1 : 0
   name                = local.img_gal_name
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
   location            = azurerm_resource_group.myrg_shd[count.index].location
@@ -290,29 +290,29 @@ TEMPLATE
   ]
 }
 
-# resource "null_resource" "install_az_cli" {
-#   count     = var.img_builder_enabled == true ? 1 : 0
-#   provisioner "local-exec" {
-#     command = <<EOF
-#       . /etc/lsb-release
-#       wget https://packages.microsoft.com/repos/azure-cli/pool/main/a/azure-cli/azure-cli_2.36.0-1~$${DISTRIB_CODENAME}_all.deb
-#       mkdir ./env && dpkg -x *.deb ./env
-#       ./env/usr/bin/az login --service-principal -u "${var.ARM_CLIENT_ID}" -p "${var.ARM_CLIENT_SECRET}" -t "${var.ARM_TENANT_ID}"
-#       ./env/usr/bin/az account show
-#     EOF
-#   }
-#   provisioner "local-exec" {
-#     command = <<EOF
-#     ./env/usr/bin/az resource invoke-action --resource-group ${azurerm_resource_group.myrg_shd[count.index].name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
-#     EOF
-#   }
-#   depends_on = [
-#     azurerm_resource_group_template_deployment.aib,
-#   ]
-#   triggers = {
-#     always_run = uuid()
-#   }
-# }
+resource "null_resource" "install_az_cli" {
+  count     = var.img_builder_enabled == true ? 1 : 0
+  provisioner "local-exec" {
+    command = <<EOF
+      . /etc/lsb-release
+      wget https://packages.microsoft.com/repos/azure-cli/pool/main/a/azure-cli/azure-cli_2.36.0-1~$${DISTRIB_CODENAME}_all.deb
+      mkdir ./env && dpkg -x *.deb ./env
+      ./env/usr/bin/az login --service-principal -u "${var.ARM_CLIENT_ID}" -p "${var.ARM_CLIENT_SECRET}" -t "${var.ARM_TENANT_ID}"
+      ./env/usr/bin/az account show
+    EOF
+  }
+  provisioner "local-exec" {
+    command = <<EOF
+    ./env/usr/bin/az resource invoke-action --resource-group ${azurerm_resource_group.myrg_shd[count.index].name} --resource-type Microsoft.VirtualMachineImages/imageTemplates -n ${local.image_builder_name} --action Run
+    EOF
+  }
+  depends_on = [
+    azurerm_resource_group_template_deployment.aib,
+  ]
+  triggers = {
+    always_run = uuid()
+  }
+}
 
 ############################################################################################################
 ############################################### SQL DB #####################################################
@@ -327,7 +327,7 @@ resource "azurerm_private_dns_zone" "mydnszone_sql" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "mylink_sql" {
-  count                 = var.sql_enabled == true ? 1 : 0 
+  count                 = var.sql_enabled == true ? 1 : 0
   name                  = "azsqllink-${var.business_unit}"
   private_dns_zone_name = azurerm_private_dns_zone.mydnszone_sql[count.index].name
   virtual_network_id    = var.vnet_id
@@ -336,7 +336,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "mylink_sql" {
 }
 
 resource "azurerm_private_endpoint" "endpoint_sql" {
-  count               = var.sql_enabled == true ? 1 : 0    
+  count               = var.sql_enabled == true ? 1 : 0
   name                = "${local.pep_name}-sql"
   location            = azurerm_resource_group.myrg_shd[count.index].location
   resource_group_name = var.vnet_rg
@@ -357,7 +357,7 @@ resource "azurerm_private_endpoint" "endpoint_sql" {
 
 resource "azurerm_private_dns_a_record" "dnszone_sql" {
   count               = var.sql_enabled == true ? 1 : 0
-  name                = "${local.sql_name}"
+  name                = local.sql_name
   zone_name           = azurerm_private_dns_zone.mydnszone_sql[count.index].name
   resource_group_name = var.vnet_rg
   ttl                 = 300
@@ -367,25 +367,25 @@ resource "azurerm_private_dns_a_record" "dnszone_sql" {
 
 # ### SQL DB Server ### login and pw in tf cloud 
 resource "random_password" "sql" {
-  count = var.sql_enabled == true && var.sql_pass == null ? 1 : 0
-  length           = 16
-  special          = true
+  count   = var.sql_enabled == true && var.sql_pass == null ? 1 : 0
+  length  = 16
+  special = true
 }
 
 resource "azurerm_mysql_flexible_server" "mysql" {
-  count                         = var.sql_enabled == true ? 1 : 0 
-  name                          = local.sql_name
-  resource_group_name           = azurerm_resource_group.myrg_shd[count.index].name
-  location                      = azurerm_resource_group.myrg_shd[count.index].location
-  administrator_login           = var.sql_admin
-  administrator_password        = var.sql_pass == null ? random_password.sql[count.index].result : var.sql_pass
-  sku_name                      = var.sql_sku
-  version                       = var.sql_version
-  zone                          = var.sql_zone
-  backup_retention_days         = 30
-  geo_redundant_backup_enabled  = false
-  tags                          = var.tags
-  storage{
+  count                        = var.sql_enabled == true ? 1 : 0
+  name                         = local.sql_name
+  resource_group_name          = azurerm_resource_group.myrg_shd[count.index].name
+  location                     = azurerm_resource_group.myrg_shd[count.index].location
+  administrator_login          = var.sql_admin
+  administrator_password       = var.sql_pass == null ? random_password.sql[count.index].result : var.sql_pass
+  sku_name                     = var.sql_sku
+  version                      = var.sql_version
+  zone                         = var.sql_zone
+  backup_retention_days        = 30
+  geo_redundant_backup_enabled = false
+  tags                         = var.tags
+  storage {
     size_gb            = var.sql_storage
     io_scaling_enabled = true
   }
@@ -410,135 +410,9 @@ resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
   collation           = var.sql_collation
 }
 
-############################################################################################################
-########################################  Storage Account ##################################################
-############################################################################################################
-
-resource "azurerm_storage_account" "storage" {
-  count                             = var.fslogix_enabled == true ? 1 : 0
-  name                              = var.st_name == null ? local.st_name : var.st_name #"${lower(random_string.random.result)}-st"
-  resource_group_name               = azurerm_resource_group.myrg_shd[count.index].name
-  location                          = azurerm_resource_group.myrg_shd[count.index].location
-  min_tls_version                   = "TLS1_2"
-  account_kind                      = var.st_account_kind
-  account_tier                      = var.st_account_tier
-  account_replication_type          = var.st_replication
-  public_network_access_enabled     = true #Needs to be changed later on (portal), otherwise share can't be created
-  allow_nested_items_to_be_public   = false
-  cross_tenant_replication_enabled  = false
-  enable_https_traffic_only         = true
-  large_file_share_enabled          = true
-  tags                              = var.tags
-  identity {
-    type = "SystemAssigned"
-  }
-  ## lifecylce block needed for if your storage account already is domain joined ##
-  lifecycle {
-    ignore_changes = [azure_files_authentication]
-  }
-}
-
-resource "azurerm_storage_share" "FSShare" {
-  count            = var.fslogix_enabled == true ? 1 : 0
-  name             = "fslogix"
-  quota            = var.share_size
-  enabled_protocol = "SMB"
-
-
-  storage_account_name = azurerm_storage_account.storage[count.index].name
-  depends_on           = [azurerm_storage_account.storage]
-  lifecycle { 
-    ignore_changes = [name, quota, enabled_protocol] 
-    }
-}
-
-resource "azurerm_storage_share" "additional_shares" {
-  count            = var.fslogix_enabled == true ? var.additional_shares : 0
-  name             = "share${format("%03d", count.index + 1)}"
-  quota            = var.share_size
-  enabled_protocol = "SMB"
-  storage_account_name = element(azurerm_storage_account.storage[*].name, count.index)
-  depends_on           = [azurerm_storage_account.storage]
-  lifecycle { 
-    ignore_changes = [name, quota, enabled_protocol] 
-    }
-}
-
-resource "azurerm_role_assignment" "af_role_prd" {
-  count              = var.fslogix_enabled == true && var.st_access_prd != null ? 1 : 0
-  scope              = azurerm_storage_account.storage[count.index].id
-  role_definition_id = data.azurerm_role_definition.storage_role.id
-  principal_id       = var.st_access_prd
-}
-
-resource "azurerm_role_assignment" "af_role_dev" {
-  count              = var.fslogix_enabled == true && var.st_access_dev != null ? 1 : 0
-  scope              = azurerm_storage_account.storage[count.index].id
-  role_definition_id = data.azurerm_role_definition.storage_role.id
-  principal_id       = var.st_access_dev 
-}
-
-#Get Private DNS Zone for the Storage Private Endpoints
-resource "azurerm_private_dns_zone" "dnszone_st" {
-  count               = var.fslogix_enabled == true ? 1 : 0
-  name                = "privatelink.file.core.windows.net"
-  resource_group_name = var.vnet_rg
-  tags                = var.tags
-}
-
-resource "azurerm_private_dns_a_record" "dnszone_st" {
-  count               = var.fslogix_enabled == true ? 1 : 0
-  name                = var.st_name == null ? "${local.st_name}" : "${var.st_name}"
-  zone_name           = azurerm_private_dns_zone.dnszone_st[count.index].name
-  resource_group_name = var.vnet_rg
-  ttl                 = 300
-  records             = [azurerm_private_endpoint.endpoint_st[count.index].private_service_connection.0.private_ip_address]
-  tags                = var.tags
-}
-
-resource "azurerm_private_endpoint" "endpoint_st" {
-  count               = var.fslogix_enabled == true ? 1 : 0
-  name                = "${local.pep_name}-st"
-  location            = azurerm_resource_group.myrg_shd[count.index].location
-  resource_group_name = var.vnet_rg
-  subnet_id           = var.subnet_id_shd
-  tags                = var.tags
-
-  private_service_connection {
-    name                           = local.psc_name
-    private_connection_resource_id = azurerm_storage_account.storage[count.index].id
-    is_manual_connection           = false
-    subresource_names              = ["file"]
-  }
-  private_dns_zone_group {
-    name                 = "dns-file-${var.business_unit}"
-    private_dns_zone_ids = azurerm_private_dns_zone.dnszone_st[count.index].*.id
-  }
-}
-
-# Deny Traffic from Public Networks with white list exceptions
-resource "azurerm_storage_account_network_rules" "stfw" {
-  count                           = var.fslogix_enabled == true ? 1 : 0
-  storage_account_id              = azurerm_storage_account.storage[count.index].id
-  default_action                  = "Deny"
-  bypass                          = ["AzureServices"]
-  depends_on                      = [azurerm_storage_share.FSShare,
-    azurerm_private_endpoint.endpoint_st
-  ]
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
-  count                 = var.fslogix_enabled == true ? 1 : 0
-  name                  = "azfilelink-${var.business_unit}"
-  resource_group_name   = var.vnet_rg
-  private_dns_zone_name = azurerm_private_dns_zone.dnszone_st[count.index].name
-  virtual_network_id    = var.vnet_id
-
-  lifecycle { ignore_changes = [tags] }
-}
 
 resource "azurerm_shared_image_gallery" "img_gal" {
-  count               = var.img_gallery_enabled == true && var.img_builder_enabled == false ? 1 : 0   
+  count               = var.img_gallery_enabled == true && var.img_builder_enabled == false ? 1 : 0
   name                = local.img_gal_name
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
   location            = azurerm_resource_group.myrg_shd[count.index].location
@@ -546,7 +420,7 @@ resource "azurerm_shared_image_gallery" "img_gal" {
 }
 
 resource "azurerm_shared_image" "image" {
-  count               = var.img_gallery_enabled == true && var.img_builder_enabled == false ? 1 : 0 
+  count               = var.img_gallery_enabled == true && var.img_builder_enabled == false ? 1 : 0
   name                = local.img_version
   gallery_name        = azurerm_shared_image_gallery.img_gal[count.index].name
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
