@@ -208,3 +208,17 @@ PROTECTED_SETTINGS
     ignore_changes = [settings, protected_settings, tags]
   }
 }
+resource "azurerm_virtual_machine_extension" "mal" {
+  count = var.vmcount
+
+  name                       = "IaaSAntimalware"
+  publisher                  = "Microsoft.Azure.Security"
+  type                       = "IaaSAntimalware"
+  type_handler_version       = "1.3"
+  virtual_machine_id         = azurerm_windows_virtual_machine.vm.*.id[count.index]
+  auto_upgrade_minor_version = "true"
+
+  depends_on = [
+    azurerm_virtual_machine_extension.vm_dsc_ext
+  ]
+}
