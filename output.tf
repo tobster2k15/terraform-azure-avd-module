@@ -64,7 +64,3 @@ output "myrg_shd" {
   description = "Resource Group Name"
   value       = azurerm_resource_group.myrg_shd[*].name
 }
-output "st_name" {
-  description = "Storage Account Name"
-  value       = azurerm_storage_account.storage[*].name
-}

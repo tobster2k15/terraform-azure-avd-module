@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "myrg_shd" {
-  count    = var.fslogix_enabled == true || var.sql_enabled == true || var.img_builder_enabled == true || var.img_gallery_enabled == true ? 1 : 0
+  count    = var.sql_enabled == true || var.img_builder_enabled == true || var.img_gallery_enabled == true ? 1 : 0
   name     = local.rg_name_shd
   location = var.location
   tags     = var.tags
