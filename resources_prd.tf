@@ -69,7 +69,7 @@ resource "azurerm_role_assignment" "rbac" {
   for_each           = toset(var.avd_access)
   scope              = azurerm_virtual_desktop_application_group.applicationgroup.id
   role_definition_id = data.azurerm_role_definition.avduser_role.id
-  principal_id       = data.azuread_group.avd_group_prd[each.value].id
+  principal_id       = data.azuread_group.avd_group_prd[each.value].object_id
 }
 
 resource "azurerm_virtual_desktop_application" "application" {
