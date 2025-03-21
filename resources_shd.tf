@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "myrg_shd" {
-  count    = var.sql_enabled == true || var.img_builder_enabled == true || var.img_gallery_enabled == true ? 1 : 0
+  count    = var.img_builder_enabled == true || var.img_gallery_enabled == true ? 1 : 0
   name     = local.rg_name_shd
   location = var.location
   tags     = var.tags
@@ -74,7 +74,7 @@ resource "time_sleep" "aib" {
 }
 
 resource "azurerm_shared_image_gallery" "aib" {
-  count               = var.img_builder_enabled == true ? 1 : 0
+  count               = var.img_builder_enabled == true || var.img_gallery_enabled == true ? 1 : 0
   name                = local.img_gal_name
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
   location            = azurerm_resource_group.myrg_shd[count.index].location
@@ -82,11 +82,13 @@ resource "azurerm_shared_image_gallery" "aib" {
 }
 
 resource "azurerm_shared_image" "aib" {
-  count               = var.img_builder_enabled == true ? 1 : 0
+  count               = var.img_builder_enabled == true || var.img_gallery_enabled == true ? 1 : 0
   name                = local.img_version
   gallery_name        = azurerm_shared_image_gallery.aib[count.index].name
   resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
   location            = azurerm_resource_group.myrg_shd[count.index].location
+  accelerated_network_support_enabled = var.image_acc_network
+  trusted_launch_enabled              = var.image_trusted_launch
   os_type             = "Windows"
   hyper_v_generation  = "V2"
   tags                = var.tags
@@ -319,119 +321,93 @@ resource "null_resource" "install_az_cli" {
 ############################################################################################################
 
 ### DNS Settings for SQL DB ###
-resource "azurerm_private_dns_zone" "mydnszone_sql" {
-  count               = var.sql_enabled == true ? 1 : 0
-  name                = "privatelink.mysql.database.azure.com"
-  resource_group_name = var.vnet_rg
-  tags                = var.tags
-}
+# resource "azurerm_private_dns_zone" "mydnszone_sql" {
+#   count               = var.sql_enabled == true ? 1 : 0
+#   name                = "privatelink.mysql.database.azure.com"
+#   resource_group_name = var.vnet_rg
+#   tags                = var.tags
+# }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "mylink_sql" {
-  count                 = var.sql_enabled == true ? 1 : 0
-  name                  = "azsqllink-${var.business_unit}"
-  private_dns_zone_name = azurerm_private_dns_zone.mydnszone_sql[count.index].name
-  virtual_network_id    = var.vnet_id
-  resource_group_name   = var.vnet_rg
-  tags                  = var.tags
-}
+# resource "azurerm_private_dns_zone_virtual_network_link" "mylink_sql" {
+#   count                 = var.sql_enabled == true ? 1 : 0
+#   name                  = "azsqllink-${var.business_unit}"
+#   private_dns_zone_name = azurerm_private_dns_zone.mydnszone_sql[count.index].name
+#   virtual_network_id    = var.vnet_id
+#   resource_group_name   = var.vnet_rg
+#   tags                  = var.tags
+# }
 
-resource "azurerm_private_endpoint" "endpoint_sql" {
-  count               = var.sql_enabled == true ? 1 : 0
-  name                = "${local.pep_name}-sql"
-  location            = azurerm_resource_group.myrg_shd[count.index].location
-  resource_group_name = var.vnet_rg
-  subnet_id           = var.subnet_id_shd
-  tags                = var.tags
+# resource "azurerm_private_endpoint" "endpoint_sql" {
+#   count               = var.sql_enabled == true ? 1 : 0
+#   name                = "${local.pep_name}-sql"
+#   location            = azurerm_resource_group.myrg_shd[count.index].location
+#   resource_group_name = var.vnet_rg
+#   subnet_id           = var.subnet_id_shd
+#   tags                = var.tags
 
-  private_service_connection {
-    name                           = "${local.psc_name}-sql"
-    private_connection_resource_id = azurerm_mysql_flexible_server.mysql[count.index].id
-    is_manual_connection           = false
-    subresource_names              = ["mysqlServer"]
-  }
-  private_dns_zone_group {
-    name                 = "dns-mysqlServer-${var.business_unit}-sql"
-    private_dns_zone_ids = azurerm_private_dns_zone.mydnszone_sql[count.index].*.id
-  }
-}
+#   private_service_connection {
+#     name                           = "${local.psc_name}-sql"
+#     private_connection_resource_id = azurerm_mysql_flexible_server.mysql[count.index].id
+#     is_manual_connection           = false
+#     subresource_names              = ["mysqlServer"]
+#   }
+#   private_dns_zone_group {
+#     name                 = "dns-mysqlServer-${var.business_unit}-sql"
+#     private_dns_zone_ids = azurerm_private_dns_zone.mydnszone_sql[count.index].*.id
+#   }
+# }
 
-resource "azurerm_private_dns_a_record" "dnszone_sql" {
-  count               = var.sql_enabled == true ? 1 : 0
-  name                = local.sql_name
-  zone_name           = azurerm_private_dns_zone.mydnszone_sql[count.index].name
-  resource_group_name = var.vnet_rg
-  ttl                 = 300
-  records             = [azurerm_private_endpoint.endpoint_sql[count.index].private_service_connection.0.private_ip_address]
-  tags                = var.tags
-}
+# resource "azurerm_private_dns_a_record" "dnszone_sql" {
+#   count               = var.sql_enabled == true ? 1 : 0
+#   name                = local.sql_name
+#   zone_name           = azurerm_private_dns_zone.mydnszone_sql[count.index].name
+#   resource_group_name = var.vnet_rg
+#   ttl                 = 300
+#   records             = [azurerm_private_endpoint.endpoint_sql[count.index].private_service_connection.0.private_ip_address]
+#   tags                = var.tags
+# }
 
-# ### SQL DB Server ### login and pw in tf cloud 
-resource "random_password" "sql" {
-  count   = var.sql_enabled == true && var.sql_pass == null ? 1 : 0
-  length  = 16
-  special = true
-}
+# # ### SQL DB Server ### login and pw in tf cloud 
+# resource "random_password" "sql" {
+#   count   = var.sql_enabled == true && var.sql_pass == null ? 1 : 0
+#   length  = 16
+#   special = true
+# }
 
-resource "azurerm_mysql_flexible_server" "mysql" {
-  count                        = var.sql_enabled == true ? 1 : 0
-  name                         = local.sql_name
-  resource_group_name          = azurerm_resource_group.myrg_shd[count.index].name
-  location                     = azurerm_resource_group.myrg_shd[count.index].location
-  administrator_login          = var.sql_admin
-  administrator_password       = var.sql_pass == null ? random_password.sql[count.index].result : var.sql_pass
-  sku_name                     = var.sql_sku
-  version                      = var.sql_version
-  zone                         = var.sql_zone
-  backup_retention_days        = 30
-  geo_redundant_backup_enabled = false
-  tags                         = var.tags
-  storage {
-    size_gb            = var.sql_storage
-    io_scaling_enabled = true
-  }
-  depends_on = [azurerm_private_dns_zone_virtual_network_link.mylink_sql]
-}
+# resource "azurerm_mysql_flexible_server" "mysql" {
+#   count                        = var.sql_enabled == true ? 1 : 0
+#   name                         = local.sql_name
+#   resource_group_name          = azurerm_resource_group.myrg_shd[count.index].name
+#   location                     = azurerm_resource_group.myrg_shd[count.index].location
+#   administrator_login          = var.sql_admin
+#   administrator_password       = var.sql_pass == null ? random_password.sql[count.index].result : var.sql_pass
+#   sku_name                     = var.sql_sku
+#   version                      = var.sql_version
+#   zone                         = var.sql_zone
+#   backup_retention_days        = 30
+#   geo_redundant_backup_enabled = false
+#   tags                         = var.tags
+#   storage {
+#     size_gb            = var.sql_storage
+#     io_scaling_enabled = true
+#   }
+#   depends_on = [azurerm_private_dns_zone_virtual_network_link.mylink_sql]
+# }
 
-resource "azurerm_mysql_flexible_database" "mysqldb_prd" {
-  count               = var.sql_enabled == true ? var.db_count : 0
-  name                = "${local.sql_db_prd}-${format("%03d", count.index + 1)}"
-  resource_group_name = element(azurerm_resource_group.myrg_shd[*].name, count.index)
-  server_name         = element(azurerm_mysql_flexible_server.mysql[*].name, count.index)
-  charset             = var.sql_charset
-  collation           = var.sql_collation
-}
+# resource "azurerm_mysql_flexible_database" "mysqldb_prd" {
+#   count               = var.sql_enabled == true ? var.db_count : 0
+#   name                = "${local.sql_db_prd}-${format("%03d", count.index + 1)}"
+#   resource_group_name = element(azurerm_resource_group.myrg_shd[*].name, count.index)
+#   server_name         = element(azurerm_mysql_flexible_server.mysql[*].name, count.index)
+#   charset             = var.sql_charset
+#   collation           = var.sql_collation
+# }
 
-resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
-  count               = var.sql_enabled == true ? var.db_count_archive : 0
-  name                = "${local.sql_db_archive}-${format("%03d", count.index + 1)}"
-  resource_group_name = element(azurerm_resource_group.myrg_shd[*].name, count.index)
-  server_name         = element(azurerm_mysql_flexible_server.mysql[*].name, count.index)
-  charset             = var.sql_charset
-  collation           = var.sql_collation
-}
-
-
-resource "azurerm_shared_image_gallery" "img_gal" {
-  count               = var.img_gallery_enabled == true && var.img_builder_enabled == false ? 1 : 0
-  name                = local.img_gal_name
-  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
-  location            = azurerm_resource_group.myrg_shd[count.index].location
-  tags                = var.tags
-}
-
-resource "azurerm_shared_image" "image" {
-  count               = var.img_gallery_enabled == true && var.img_builder_enabled == false ? 1 : 0
-  name                = local.img_version
-  gallery_name        = azurerm_shared_image_gallery.img_gal[count.index].name
-  resource_group_name = azurerm_resource_group.myrg_shd[count.index].name
-  location            = azurerm_resource_group.myrg_shd[count.index].location
-  os_type             = var.os_type
-  hyper_v_generation  = var.hyper_v_generation
-  tags                = var.tags
-
-  identifier {
-    publisher = var.publisher
-    offer     = var.offer
-    sku       = var.sku
-  }
-}
+# resource "azurerm_mysql_flexible_database" "mysqldb_archive" {
+#   count               = var.sql_enabled == true ? var.db_count_archive : 0
+#   name                = "${local.sql_db_archive}-${format("%03d", count.index + 1)}"
+#   resource_group_name = element(azurerm_resource_group.myrg_shd[*].name, count.index)
+#   server_name         = element(azurerm_mysql_flexible_server.mysql[*].name, count.index)
+#   charset             = var.sql_charset
+#   collation           = var.sql_collation
+# }

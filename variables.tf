@@ -569,8 +569,14 @@ variable "preferred_app_group_type" {
   default     = "Desktop"
 }
 
-variable "identity_provider" {
-  type        = string
-  description = "Identity Provider for Storage Account Domain Join"
-  default     = "ADDS"
+variable "image_acc_network" {
+  type        = bool
+  description = "Allecrated Networking Support for Image Definition."
+  default     = true
+}
+
+variable "image_trusted_launch" {
+  type        = bool
+  description = "Trusted Launch Support for Image Definition."
+  default     = true
 }
